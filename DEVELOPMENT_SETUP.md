@@ -35,6 +35,19 @@ docker-compose up -d frontend
 - **백엔드 API**: http://localhost:8002
 - **API 문서**: http://localhost:8002/docs
 
+### 4. 로컬 Python 작업 (필요시)
+```bash
+# conda py3_13 환경 활성화 (로컬 Python 스크립트 실행시 필요)
+conda activate py3_13
+
+# 데이터베이스 마이그레이션 (로컬에서 직접 실행시)
+cd backend
+alembic upgrade head
+
+# 기본 사용자 생성 (로컬에서 직접 실행시)
+python create_default_users.py
+```
+
 ## 🔧 개발 명령어 (Docker)
 
 ### 백엔드 개발
@@ -50,6 +63,11 @@ docker-compose exec backend bash
 
 # 데이터베이스 마이그레이션 (컨테이너 내부에서)
 docker-compose exec backend alembic upgrade head
+
+# 또는 로컬에서 직접 실행 (conda 환경 필요)
+conda activate py3_13
+cd backend
+alembic upgrade head
 ```
 
 ### 프론트엔드 개발
@@ -122,6 +140,21 @@ railway up
 ```
 
 ## 🔍 문제 해결
+
+### Python 환경 문제 (로컬 작업시)
+```bash
+# conda 환경 확인
+conda info --envs
+
+# py3_13 환경이 없다면 생성
+conda create -n py3_13 python=3.13
+
+# 환경 활성화
+conda activate py3_13
+
+# Python 버전 확인
+python --version  # Python 3.13.1이어야 함
+```
 
 ### Docker 컨테이너 문제
 ```bash
@@ -242,4 +275,6 @@ git push origin main
 
 ---
 
-**⚠️ 중요**: 모든 개발 작업은 Docker 컨테이너에서 수행됩니다!
+**⚠️ 중요**: 
+- **일반 개발 작업**: Docker 컨테이너에서 수행
+- **로컬 Python 스크립트 실행**: `conda activate py3_13` 환경에서 수행
