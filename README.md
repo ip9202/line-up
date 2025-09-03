@@ -19,30 +19,35 @@
 ## 🏗️ 기술 스택
 
 ### Backend
-- **Python 3.13** (conda 가상환경 py3_13)
+- **Python 3.13** (conda 가상환경 `py3_13`)
 - **FastAPI**: 웹 프레임워크
 - **SQLAlchemy**: ORM
 - **PostgreSQL**: 데이터베이스
 - **ReportLab**: PDF 생성
 - **Pillow**: 이미지 처리
+- **JWT**: 인증 시스템
 
 ### Frontend
 - **React 18** + **TypeScript**
 - **Tailwind CSS**: 스타일링
 - **React DnD**: 드래그앤드롭
 - **React Query**: 상태 관리
+- **React Context API**: 전역 상태 관리
 
 ### 개발 환경
-- **Docker**: 로컬 개발 환경
-- **conda**: Python 환경 관리
-- **Railway**: 클라우드 배포
+- **로컬 개발**: conda `py3_13` (Python 3.13.1)
+- **프로덕션**: Railway (Python 3.13 via Docker)
+- **배포**: GitHub 연동 자동 배포
 
-## ✅ 현재 상태 (2024-12-19)
+## ✅ 현재 상태 (2025-01-03)
 
 ### 완료된 기능
-- ✅ **선수 관리 API** - CRUD 완료
-- ✅ **경기 관리 API** - CRUD 완료  
-- ✅ **라인업 관리 API** - CRUD + 선수 추가/제거 완료
+- ✅ **인증 시스템** - JWT 기반 로그인/로그아웃
+- ✅ **권한 관리** - 총무/감독 역할별 접근 제어
+- ✅ **선수 관리** - CRUD, 정렬, 검색, 권한 체크
+- ✅ **경기 관리** - CRUD, 권한 체크
+- ✅ **라인업 관리** - CRUD, 드래그앤드롭, 권한 체크
+- ✅ **PDF 출력** - 한글 지원, A4 출력
 - ✅ **Docker 환경** - 모든 서비스 정상 작동
 - ✅ **데이터베이스** - PostgreSQL 연결 및 마이그레이션 완료
 
@@ -163,8 +168,13 @@ line-up/
 
 ## 🔧 개발 가이드
 
+### ⚠️ 중요: Python 환경 설정
+- **로컬 개발**: 반드시 `conda py3_13` 환경 사용
+- **프로덕션**: Railway에서 Python 3.13 실행
+- **GitHub 배포**: main 브랜치 푸시 시 자동 배포
+
 ### 개발 시작 전 체크리스트
-- [ ] `conda activate py3_13` 실행
+- [ ] `conda activate py3_13` 실행 (필수!)
 - [ ] Python 버전 확인 (3.13.1)
 - [ ] Docker 서비스 실행 상태 확인
 - [ ] 데이터베이스 연결 확인
@@ -183,7 +193,15 @@ line-up/
 
 ## 🚀 배포
 
-### Railway 배포
+### GitHub 연동 자동 배포 (권장)
+```bash
+# GitHub에 푸시하면 자동으로 Railway에 배포됨
+git add .
+git commit -m "feat: 새로운 기능 추가"
+git push origin main  # 자동 배포 트리거
+```
+
+### Railway 수동 배포
 ```bash
 # Railway CLI 설치
 npm install -g @railway/cli
@@ -193,6 +211,27 @@ railway login
 
 # 프로젝트 배포
 railway up
+```
+
+### 로컬 개발 환경 설정
+```bash
+# 1. conda py3_13 환경 활성화 (필수!)
+conda activate py3_13
+
+# 2. 백엔드 의존성 설치
+cd backend
+pip install -r requirements.txt
+
+# 3. 데이터베이스 실행
+docker-compose up -d db
+
+# 4. 백엔드 서버 실행
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+# 5. 프론트엔드 실행 (별도 터미널)
+cd frontend
+npm install
+npm run dev
 ```
 
 ### 환경 변수 설정

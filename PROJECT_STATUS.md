@@ -28,8 +28,9 @@
 - **Drag & Drop**: React DnD
 
 ### Infrastructure
-- **Local Development**: Docker Compose
-- **Production Deployment**: Railway
+- **Local Development**: Conda `py3_13` (Python 3.13.1)
+- **Production Deployment**: Railway (Python 3.13 via Docker)
+- **Deployment Method**: GitHub 연동 자동 배포
 - **Version Control**: Git
 
 ## 🚀 현재 구현 상태
@@ -212,11 +213,16 @@
 
 ## 🛠️ 개발 환경 설정
 
+### ⚠️ 중요: Python 환경 설정
+- **로컬 개발**: 반드시 `conda py3_13` 환경 사용
+- **프로덕션**: Railway에서 Python 3.13 실행
+- **GitHub 배포**: main 브랜치 푸시 시 자동 배포
+
 ### 로컬 개발 실행
 ```bash
-# 백엔드 실행
+# 백엔드 실행 (py3_13 환경 필수!)
 cd backend
-conda activate py3_12
+conda activate py3_13
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
 
 # 프론트엔드 실행
@@ -230,10 +236,16 @@ npm run dev
 # 데이터베이스 실행
 docker-compose up -d db
 
-# 백엔드 실행 (별도 터미널)
+# 백엔드 실행 (별도 터미널, py3_13 환경 필수!)
 cd backend
-conda activate py3_12
+conda activate py3_13
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+```
+
+### Railway 배포 설정
+```bash
+# GitHub 연동 자동 배포
+git push origin main  # 자동으로 Railway에 배포됨
 ```
 
 ## 📝 주요 변경사항 히스토리
