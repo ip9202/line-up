@@ -35,7 +35,15 @@ docker-compose up -d frontend
 - **백엔드 API**: http://localhost:8002
 - **API 문서**: http://localhost:8002/docs
 
-### 4. 로컬 Python 작업 (필요시)
+### 4. 포트 정보
+| 서비스 | 포트 | 설명 |
+|--------|------|------|
+| 프론트엔드 | 3000 | React 개발 서버 |
+| 백엔드 API | 8002 | FastAPI 서버 |
+| 데이터베이스 | 5433 | PostgreSQL |
+| API 문서 | 8002/docs | Swagger UI |
+
+### 5. 로컬 Python 작업 (필요시)
 ```bash
 # conda py3_13 환경 활성화 (로컬 Python 스크립트 실행시 필요)
 conda activate py3_13
@@ -175,12 +183,22 @@ docker-compose up -d
 ### 포트 충돌 문제
 ```bash
 # 사용 중인 포트 확인
-lsof -i :3000  # 프론트엔드
-lsof -i :8002  # 백엔드
-lsof -i :5433  # 데이터베이스
+lsof -i :3000  # 프론트엔드 (React)
+lsof -i :8002  # 백엔드 (FastAPI)
+lsof -i :5433  # 데이터베이스 (PostgreSQL)
+
+# 특정 포트 사용 프로세스 확인
+lsof -i :3000 | grep LISTEN
+lsof -i :8002 | grep LISTEN
+lsof -i :5433 | grep LISTEN
 
 # Docker 컨테이너 중지
 docker-compose down
+
+# 포트 사용 프로세스 강제 종료 (필요시)
+sudo kill -9 $(lsof -t -i:3000)
+sudo kill -9 $(lsof -t -i:8002)
+sudo kill -9 $(lsof -t -i:5433)
 ```
 
 ### 데이터베이스 연결 문제
