@@ -1,0 +1,23 @@
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
+import Players from './pages/Players'
+import Games from './pages/Games'
+import LineupEditor from './pages/LineupEditor'
+import LineupList from './pages/LineupList'
+
+function App() {
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/players" element={<Players />} />
+        <Route path="/games" element={<Games />} />
+        <Route path="/lineup/editor" element={<LineupEditor />} />
+        <Route path="/lineup/list" element={<LineupList />} />
+      </Routes>
+    </Layout>
+  )
+}
+
+export default App

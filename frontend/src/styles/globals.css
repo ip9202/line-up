@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-family: 'Pretendard', 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-200 bg-transparent text-gray-700 rounded-md transition-all duration-200 cursor-pointer;
+  }
+  
+  .btn:hover {
+    @apply bg-gray-50 border-gray-300;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-500 border-primary-500 text-white;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-primary-600 border-primary-600;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 border-gray-300 text-gray-700;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-gray-200 border-gray-400;
+  }
+  
+  .btn-danger {
+    @apply bg-red-500 border-red-500 text-white;
+  }
+  
+  .btn-danger:hover {
+    @apply bg-red-600 border-red-600;
+  }
+  
+  /* Card Components */
+  .card {
+    @apply border border-gray-200 bg-white rounded-lg overflow-hidden transition-shadow duration-200;
+  }
+  
+  .card:hover {
+    @apply shadow-md;
+  }
+  
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200 bg-gray-50;
+  }
+  
+  .card-body {
+    @apply p-6;
+  }
+  
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+  }
+  
+  /* Form Components */
+  .form-group {
+    @apply mb-4;
+  }
+  
+  .form-label {
+    @apply block mb-2 text-sm font-medium text-gray-700;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 text-sm border border-gray-200 rounded-md transition-colors duration-200;
+  }
+  
+  .form-input:focus {
+    @apply outline-none border-primary-500 ring-2 ring-primary-100;
+  }
+  
+  .form-select {
+    @apply w-full px-3 py-2 text-sm border border-gray-200 rounded-md bg-white transition-colors duration-200;
+  }
+  
+  .form-select:focus {
+    @apply outline-none border-primary-500 ring-2 ring-primary-100;
+  }
+  
+  .form-textarea {
+    @apply w-full px-3 py-2 text-sm border border-gray-200 rounded-md resize-vertical transition-colors duration-200;
+  }
+  
+  .form-textarea:focus {
+    @apply outline-none border-primary-500 ring-2 ring-primary-100;
+  }
+  
+  /* Layout Components */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .page-header {
+    @apply mb-8;
+  }
+  
+  .page-title {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  .page-subtitle {
+    @apply mt-2 text-sm text-gray-600;
+  }
+  
+  /* Table Components */
+  .table {
+    @apply w-full border-collapse;
+  }
+  
+  .table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200;
+  }
+  
+  .table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-200;
+  }
+  
+  .table tbody tr:hover {
+    @apply bg-gray-50;
+  }
+  
+  /* Modal Components */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  }
+  
+  .modal-content {
+    @apply bg-white rounded-lg shadow-xl max-w-md w-full mx-4;
+  }
+  
+  .modal-header {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+  
+  .modal-body {
+    @apply px-6 py-4;
+  }
+  
+  .modal-footer {
+    @apply px-6 py-4 border-t border-gray-200 flex justify-end space-x-3;
+  }
+  
+  /* Fade Transition */
+  .fade-transition {
+    @apply opacity-0 invisible transition-all duration-200 ease-in-out;
+  }
+  
+  .fade-transition.active {
+    @apply opacity-100 visible;
+  }
+  
+  /* Loading Spinner */
+  .spinner {
+    @apply animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500;
+  }
+  
+  /* Player Card */
+  .player-card {
+    @apply border border-gray-200 bg-white rounded-lg p-3 flex items-center gap-3 transition-all duration-200 cursor-grab;
+  }
+  
+  .player-card:hover {
+    @apply bg-gray-50 shadow-md;
+  }
+  
+  .player-card.dragging {
+    @apply opacity-50 cursor-grabbing;
+  }
+  
+  .player-number {
+    @apply w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold text-sm;
+  }
+  
+  /* Lineup Grid */
+  .lineup-grid {
+    @apply grid grid-cols-3 gap-4 max-w-4xl mx-auto;
+  }
+  
+  .position-card {
+    @apply border border-gray-200 bg-white rounded-lg p-4 text-center transition-all duration-200 cursor-pointer;
+  }
+  
+  .position-card:hover {
+    @apply bg-gray-50 border-primary-300;
+  }
+  
+  .position-card.dragover {
+    @apply bg-primary-50 border-primary-500 border-dashed;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
