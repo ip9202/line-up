@@ -13,10 +13,14 @@ export const api = axios.create({
 // API 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token')
+  console.log('API 인터셉터 - 요청 URL:', config.url)
   console.log('API 인터셉터 - 토큰:', token ? '존재함' : '없음')
+  console.log('API 인터셉터 - 토큰 값:', token ? token.substring(0, 20) + '...' : '없음')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
     console.log('API 인터셉터 - Authorization 헤더 설정됨')
+  } else {
+    console.log('API 인터셉터 - 토큰이 없어서 Authorization 헤더 설정 안함')
   }
   return config
 })

@@ -79,14 +79,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-xl">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6 rounded-t-xl">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold">로그인</h2>
-              <p className="text-blue-100 text-sm mt-1">
+              <h2 className="text-xl sm:text-2xl font-bold">로그인</h2>
+              <p className="text-blue-100 text-xs sm:text-sm mt-1">
                 총무 또는 감독 계정으로 로그인하세요
               </p>
             </div>
@@ -94,13 +94,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               onClick={handleClose}
               className="text-white hover:text-blue-200 transition-colors p-2 hover:bg-white hover:bg-opacity-10 rounded-full"
             >
-              <X className="h-6 w-6" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* 전역 에러 메시지 */}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                  className={`w-full pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base ${
                     errors.username ? 'border-red-500' : 'border-gray-200'
                   }`}
                   placeholder="사용자명을 입력하세요"
@@ -149,7 +149,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                  className={`w-full pl-10 pr-4 py-2.5 sm:py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base ${
                     errors.password ? 'border-red-500' : 'border-gray-200'
                   }`}
                   placeholder="비밀번호를 입력하세요"
@@ -172,18 +172,18 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </div>
 
             {/* 버튼 */}
-            <div className="flex space-x-3 pt-4">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="flex-1 px-4 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm sm:text-base"
                 disabled={isLoading}
               >
                 취소
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (
