@@ -1,114 +1,102 @@
 # 🛠️ 개발 환경 설정 가이드
 
-## ⚠️ 중요: Python 환경 설정
+## ⚠️ 중요: Docker 기반 개발 환경
 
 ### 환경 요구사항
-- **로컬 개발**: `conda py3_13` (Python 3.13.1) **필수**
+- **로컬 개발**: Docker & Docker Compose **필수**
 - **프로덕션**: Railway (Python 3.13 via Docker)
 - **배포**: GitHub 연동 자동 배포
 
-## 🚀 빠른 시작
+## 🚀 빠른 시작 (Docker)
 
-### 1. Python 환경 설정
+### 1. 전체 서비스 실행
 ```bash
-# conda py3_13 환경 활성화 (필수!)
-conda activate py3_13
-
-# Python 버전 확인
-python --version  # Python 3.13.1이어야 함
-```
-
-### 2. 백엔드 설정
-```bash
-# 백엔드 디렉토리로 이동
-cd backend
-
-# 의존성 설치
-pip install -r requirements.txt
-
-# 환경 변수 설정
-cp env.example .env
-# .env 파일을 편집하여 필요한 값 설정
-```
-
-### 3. 데이터베이스 설정
-```bash
-# Docker로 PostgreSQL 실행
-docker-compose up -d db
-
-# 데이터베이스 마이그레이션 실행
-alembic upgrade head
-
-# 기본 사용자 생성 (선택사항)
-python create_default_users.py
-```
-
-### 4. 백엔드 서버 실행
-```bash
-# 백엔드 서버 시작
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
-```
-
-### 5. 프론트엔드 설정
-```bash
-# 새 터미널에서 프론트엔드 디렉토리로 이동
-cd frontend
-
-# 의존성 설치
-npm install
-
-# 프론트엔드 서버 시작
-npm run dev
-```
-
-## 🔧 개발 명령어
-
-### 백엔드 개발
-```bash
-# 서버 실행
-conda activate py3_13
-cd backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
-
-# 데이터베이스 마이그레이션
-alembic revision --autogenerate -m "마이그레이션 메시지"
-alembic upgrade head
-
-# 테스트 실행
-pytest
-```
-
-### 프론트엔드 개발
-```bash
-# 개발 서버 실행
-cd frontend
-npm run dev
-
-# 빌드
-npm run build
-
-# 타입 체크
-npm run type-check
-```
-
-## 🐳 Docker 개발 환경
-
-### 전체 서비스 실행
-```bash
-# 모든 서비스 실행
+# 모든 서비스 실행 (백엔드 + 프론트엔드 + 데이터베이스)
 docker-compose up -d
 
 # 로그 확인
 docker-compose logs -f
 ```
 
-### 데이터베이스만 실행
+### 2. 개별 서비스 실행
+```bash
+# 데이터베이스만 실행
+docker-compose up -d db
+
+# 백엔드만 실행
+docker-compose up -d backend
+
+# 프론트엔드만 실행
+docker-compose up -d frontend
+```
+
+### 3. 서비스 접속
+- **프론트엔드**: http://localhost:3000
+- **백엔드 API**: http://localhost:8002
+- **API 문서**: http://localhost:8002/docs
+
+## 🔧 개발 명령어 (Docker)
+
+### 백엔드 개발
+```bash
+# 백엔드 컨테이너 재빌드 및 실행
+docker-compose up --build -d backend
+
+# 백엔드 로그 확인
+docker-compose logs -f backend
+
+# 백엔드 컨테이너 내부 접속
+docker-compose exec backend bash
+
+# 데이터베이스 마이그레이션 (컨테이너 내부에서)
+docker-compose exec backend alembic upgrade head
+```
+
+### 프론트엔드 개발
+```bash
+# 프론트엔드 컨테이너 재빌드 및 실행
+docker-compose up --build -d frontend
+
+# 프론트엔드 로그 확인
+docker-compose logs -f frontend
+
+# 프론트엔드 컨테이너 내부 접속
+docker-compose exec frontend sh
+```
+
+## 🐳 Docker 개발 환경 상세
+
+### 서비스 관리
+```bash
+# 모든 서비스 실행
+docker-compose up -d
+
+# 특정 서비스만 실행
+docker-compose up -d db backend frontend
+
+# 서비스 중지
+docker-compose down
+
+# 서비스 재시작
+docker-compose restart
+
+# 로그 확인
+docker-compose logs -f [service_name]
+```
+
+### 데이터베이스 관리
 ```bash
 # PostgreSQL만 실행
 docker-compose up -d db
 
 # 데이터베이스 접속
 docker-compose exec db psql -U lineup_user -d lineup_db
+
+# 데이터베이스 백업
+docker-compose exec db pg_dump -U lineup_user lineup_db > backup.sql
+
+# 데이터베이스 복원
+docker-compose exec -T db psql -U lineup_user lineup_db < backup.sql
 ```
 
 ## 🚀 배포
@@ -135,38 +123,46 @@ railway up
 
 ## 🔍 문제 해결
 
-### Python 환경 문제
+### Docker 컨테이너 문제
 ```bash
-# conda 환경 확인
-conda info --envs
+# 컨테이너 상태 확인
+docker-compose ps
 
-# py3_13 환경이 없다면 생성
-conda create -n py3_13 python=3.13
+# 컨테이너 재시작
+docker-compose restart [service_name]
 
-# 환경 활성화
-conda activate py3_13
+# 컨테이너 재빌드
+docker-compose up --build -d [service_name]
+
+# 모든 컨테이너 중지 및 삭제
+docker-compose down
+docker-compose up -d
 ```
 
 ### 포트 충돌 문제
 ```bash
 # 사용 중인 포트 확인
-lsof -i :8002
-lsof -i :3001
+lsof -i :3000  # 프론트엔드
+lsof -i :8002  # 백엔드
+lsof -i :5433  # 데이터베이스
 
-# 프로세스 종료
-pkill -f "uvicorn app.main:app"
+# Docker 컨테이너 중지
+docker-compose down
 ```
 
 ### 데이터베이스 연결 문제
 ```bash
-# Docker 컨테이너 상태 확인
-docker-compose ps
+# 데이터베이스 컨테이너 상태 확인
+docker-compose ps db
 
 # 데이터베이스 재시작
 docker-compose restart db
 
-# 로그 확인
+# 데이터베이스 로그 확인
 docker-compose logs db
+
+# 데이터베이스 연결 테스트
+docker-compose exec db pg_isready -U lineup_user
 ```
 
 ## 📝 환경 변수
@@ -195,7 +191,7 @@ SECRET_KEY=your-production-secret-key
 CORS_ORIGINS=https://your-domain.railway.app
 ```
 
-## 🎯 개발 워크플로우
+## 🎯 개발 워크플로우 (Docker)
 
 ### 1. 기능 개발
 ```bash
@@ -203,8 +199,10 @@ CORS_ORIGINS=https://your-domain.railway.app
 git checkout -b feature/new-feature
 
 # 개발 진행
-conda activate py3_13
-# ... 개발 작업 ...
+# ... 코드 수정 ...
+
+# 변경사항 테스트
+docker-compose up --build -d
 
 # 커밋
 git add .
@@ -213,13 +211,15 @@ git commit -m "feat: 새로운 기능 추가"
 
 ### 2. 테스트
 ```bash
-# 백엔드 테스트
-cd backend
-pytest
+# 백엔드 테스트 (컨테이너 내부에서)
+docker-compose exec backend pytest
 
-# 프론트엔드 테스트
-cd frontend
-npm test
+# 프론트엔드 테스트 (컨테이너 내부에서)
+docker-compose exec frontend npm test
+
+# 전체 서비스 테스트
+docker-compose up -d
+# 브라우저에서 http://localhost:3000 접속하여 테스트
 ```
 
 ### 3. 배포
@@ -242,4 +242,4 @@ git push origin main
 
 ---
 
-**⚠️ 중요**: 모든 개발 작업은 `conda py3_13` 환경에서 수행해야 합니다!
+**⚠️ 중요**: 모든 개발 작업은 Docker 컨테이너에서 수행됩니다!
