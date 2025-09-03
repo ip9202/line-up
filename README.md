@@ -37,6 +37,32 @@
 - **conda**: Python 환경 관리
 - **Railway**: 클라우드 배포
 
+## ✅ 현재 상태 (2024-12-19)
+
+### 완료된 기능
+- ✅ **선수 관리 API** - CRUD 완료
+- ✅ **경기 관리 API** - CRUD 완료  
+- ✅ **라인업 관리 API** - CRUD + 선수 추가/제거 완료
+- ✅ **Docker 환경** - 모든 서비스 정상 작동
+- ✅ **데이터베이스** - PostgreSQL 연결 및 마이그레이션 완료
+
+### 테스트 데이터
+- **선수**: 김철수(투수), 이영희(유격수), 박민수(1루수)
+- **경기**: LG 트윈스 vs 크리스마스, 키움 히어로즈 vs 주말
+- **라인업**: 3명의 선수로 구성된 테스트 라인업
+
+### API 테스트 예시
+```bash
+# 선수 목록 조회
+curl http://localhost:8002/api/v1/players/
+
+# 경기 목록 조회  
+curl http://localhost:8002/api/v1/games/
+
+# 라인업 상세 조회
+curl http://localhost:8002/api/v1/lineups/2
+```
+
 ## 🚀 빠른 시작
 
 ### ⚠️ 중요: 개발 환경 설정 규칙
@@ -78,8 +104,9 @@ alembic upgrade head
 
 ### 3. 서비스 접속
 - **프론트엔드**: http://localhost:3000
-- **백엔드 API**: http://localhost:8000
-- **API 문서**: http://localhost:8000/docs
+- **백엔드 API**: http://localhost:8002
+- **API 문서**: http://localhost:8002/docs
+- **데이터베이스**: localhost:5433
 
 ## 📁 프로젝트 구조
 
