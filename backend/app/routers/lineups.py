@@ -6,6 +6,7 @@ from app.utils.database import get_db
 from app.models.lineup import Lineup
 from app.models.lineup_player import LineupPlayer
 from app.schemas.lineup import LineupCreate, LineupUpdate, LineupResponse, LineupPlayerResponse, LineupPlayerCreate
+from app.dependencies.auth import get_current_active_user, require_coach_role
 
 router = APIRouter()
 
@@ -34,7 +35,11 @@ async def get_lineup(lineup_id: int, db: Session = Depends(get_db)):
     return lineup
 
 @router.post("/", response_model=LineupResponse)
-async def create_lineup(lineup: LineupCreate, db: Session = Depends(get_db)):
+async def create_lineup(
+    lineup: LineupCreate, 
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
+):
     """라인업 생성"""
     db_lineup = Lineup(**lineup.dict())
     db.add(db_lineup)
@@ -46,7 +51,8 @@ async def create_lineup(lineup: LineupCreate, db: Session = Depends(get_db)):
 async def update_lineup(
     lineup_id: int, 
     lineup: LineupUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
 ):
     """라인업 수정"""
     db_lineup = db.query(Lineup).filter(Lineup.id == lineup_id).first()
@@ -61,7 +67,11 @@ async def update_lineup(
     return db_lineup
 
 @router.delete("/{lineup_id}")
-async def delete_lineup(lineup_id: int, db: Session = Depends(get_db)):
+async def delete_lineup(
+    lineup_id: int, 
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
+):
     """라인업 삭제"""
     lineup = db.query(Lineup).filter(Lineup.id == lineup_id).first()
     if not lineup:
@@ -75,7 +85,8 @@ async def delete_lineup(lineup_id: int, db: Session = Depends(get_db)):
 async def add_player_to_lineup(
     lineup_id: int,
     player_data: LineupPlayerCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
 ):
     """라인업에 선수 추가"""
     # Check if lineup exists
@@ -104,7 +115,8 @@ async def add_player_to_lineup(
 async def remove_player_from_lineup(
     lineup_id: int,
     lineup_player_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
 ):
     """라인업에서 선수 제거"""
     lineup_player = db.query(LineupPlayer).filter(
@@ -124,7 +136,8 @@ async def copy_lineup(
     lineup_id: int,
     new_name: str,
     new_game_id: int = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_coach_role)
 ):
     """라인업 복사"""
     original_lineup = db.query(Lineup).filter(Lineup.id == lineup_id).first()

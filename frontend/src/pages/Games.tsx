@@ -1,8 +1,25 @@
 import { useState } from 'react'
-import { Plus, Search, Calendar, MapPin, Users } from 'lucide-react'
+import { Plus, Search, Calendar, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Games() {
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // 인증 상태
+  const { user, isAuthenticated } = useAuth()
+
+  // 권한 체크 함수들
+  const canManageGames = () => {
+    return isAuthenticated && user?.role === '총무'
+  }
+
+  const canEditGame = () => {
+    return isAuthenticated && user?.role === '총무'
+  }
+
+  const canDeleteGame = () => {
+    return isAuthenticated && user?.role === '총무'
+  }
 
   return (
     <div className="space-y-6">
@@ -27,7 +44,14 @@ export default function Games() {
             />
           </div>
         </div>
-        <button className="btn btn-primary flex items-center gap-2">
+        <button 
+          disabled={!canManageGames()}
+          className={`flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors ${
+            canManageGames()
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+        >
           <Plus className="h-4 w-4" />
           경기 추가
         </button>
@@ -64,9 +88,16 @@ export default function Games() {
                 <button className="btn btn-primary text-sm flex-1">
                   라인업 생성
                 </button>
-                <button className="btn btn-secondary text-sm">
-                  수정
-                </button>
+                {canEditGame() && (
+                  <button className="btn btn-secondary text-sm">
+                    수정
+                  </button>
+                )}
+                {canDeleteGame() && (
+                  <button className="btn btn-danger text-sm">
+                    삭제
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -101,9 +132,16 @@ export default function Games() {
                 <button className="btn btn-secondary text-sm flex-1">
                   라인업 보기
                 </button>
-                <button className="btn btn-secondary text-sm">
-                  수정
-                </button>
+                {canEditGame() && (
+                  <button className="btn btn-secondary text-sm">
+                    수정
+                  </button>
+                )}
+                {canDeleteGame() && (
+                  <button className="btn btn-danger text-sm">
+                    삭제
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -118,8 +156,15 @@ export default function Games() {
           첫 번째 경기를 추가해보세요.
         </p>
         <div className="mt-6">
-          <button className="btn btn-primary">
-            <Plus className="h-4 w-4 mr-2" />
+          <button 
+            disabled={!canManageGames()}
+            className={`flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors ${
+              canManageGames()
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Plus className="h-4 w-4" />
             경기 추가
           </button>
         </div>

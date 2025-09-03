@@ -1,8 +1,25 @@
 import { useState } from 'react'
 import { Search, Download, Printer, Eye, Edit, Trash2, ClipboardList } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function LineupList() {
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // 인증 상태
+  const { user, isAuthenticated } = useAuth()
+
+  // 권한 체크 함수들
+  const canManageLineups = () => {
+    return isAuthenticated && user?.role === '감독'
+  }
+
+  const canEditLineup = () => {
+    return isAuthenticated && user?.role === '감독'
+  }
+
+  const canDeleteLineup = () => {
+    return isAuthenticated && user?.role === '감독'
+  }
 
   return (
     <div className="space-y-6">
@@ -59,10 +76,12 @@ export default function LineupList() {
                   <Eye className="h-3 w-3" />
                   보기
                 </button>
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Edit className="h-3 w-3" />
-                  수정
-                </button>
+                {canEditLineup() && (
+                  <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
+                    <Edit className="h-3 w-3" />
+                    수정
+                  </button>
+                )}
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Download className="h-3 w-3" />
                   PDF
@@ -106,10 +125,12 @@ export default function LineupList() {
                   <Eye className="h-3 w-3" />
                   보기
                 </button>
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Edit className="h-3 w-3" />
-                  수정
-                </button>
+                {canEditLineup() && (
+                  <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
+                    <Edit className="h-3 w-3" />
+                    수정
+                  </button>
+                )}
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Download className="h-3 w-3" />
                   PDF
@@ -153,10 +174,12 @@ export default function LineupList() {
                   <Eye className="h-3 w-3" />
                   보기
                 </button>
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Edit className="h-3 w-3" />
-                  수정
-                </button>
+                {canEditLineup() && (
+                  <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
+                    <Edit className="h-3 w-3" />
+                    수정
+                  </button>
+                )}
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Download className="h-3 w-3" />
                   PDF

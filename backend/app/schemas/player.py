@@ -1,13 +1,15 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import date, datetime
+from app.enums.player_role import PlayerRole
 
 class PlayerBase(BaseModel):
     name: str
     number: Optional[int] = None
-    phone: Optional[str] = None
+    phone: str
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
+    role: PlayerRole = PlayerRole.PLAYER
     age: Optional[int] = None
     birth_date: Optional[date] = None
     hometown: Optional[str] = None
@@ -16,6 +18,7 @@ class PlayerBase(BaseModel):
     height: Optional[int] = None
     weight: Optional[int] = None
     join_date: Optional[date] = None
+    is_professional: bool = False
     notes: Optional[str] = None
     is_active: bool = True
 
@@ -28,6 +31,7 @@ class PlayerUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
+    role: Optional[PlayerRole] = None
     age: Optional[int] = None
     birth_date: Optional[date] = None
     hometown: Optional[str] = None
@@ -36,6 +40,7 @@ class PlayerUpdate(BaseModel):
     height: Optional[int] = None
     weight: Optional[int] = None
     join_date: Optional[date] = None
+    is_professional: Optional[bool] = None
     notes: Optional[str] = None
     is_active: Optional[bool] = None
 

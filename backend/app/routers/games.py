@@ -5,6 +5,7 @@ from typing import List
 from app.utils.database import get_db
 from app.models.game import Game
 from app.schemas.game import GameCreate, GameUpdate, GameResponse
+from app.dependencies.auth import get_current_active_user, require_manager_role
 
 router = APIRouter()
 
@@ -33,7 +34,11 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
     return game
 
 @router.post("/", response_model=GameResponse)
-async def create_game(game: GameCreate, db: Session = Depends(get_db)):
+async def create_game(
+    game: GameCreate, 
+    db: Session = Depends(get_db),
+    current_user = Depends(require_manager_role)
+):
     """경기 등록"""
     db_game = Game(**game.dict())
     db.add(db_game)
@@ -45,7 +50,8 @@ async def create_game(game: GameCreate, db: Session = Depends(get_db)):
 async def update_game(
     game_id: int, 
     game: GameUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(require_manager_role)
 ):
     """경기 수정"""
     db_game = db.query(Game).filter(Game.id == game_id).first()
@@ -60,7 +66,11 @@ async def update_game(
     return db_game
 
 @router.delete("/{game_id}")
-async def delete_game(game_id: int, db: Session = Depends(get_db)):
+async def delete_game(
+    game_id: int, 
+    db: Session = Depends(get_db),
+    current_user = Depends(require_manager_role)
+):
     """경기 삭제"""
     game = db.query(Game).filter(Game.id == game_id).first()
     if not game:

@@ -2,6 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 야구 오더지 스타일 */
+.lineup-editor-layout {
+  @apply flex gap-8 max-w-7xl mx-auto p-6 bg-white;
+}
+
+.lineup-section {
+  @apply flex-1;
+}
+
+.lineup-header {
+  @apply mb-6 text-center;
+}
+
+.lineup-title {
+  @apply text-2xl font-bold text-gray-900 mb-2;
+}
+
+.lineup-info {
+  @apply text-gray-600;
+}
+
+.lineup-table-container {
+  @apply mb-6;
+}
+
+.lineup-table {
+  @apply w-full border-collapse border border-gray-300 bg-white shadow-sm;
+}
+
+.lineup-table th {
+  @apply bg-gray-100 border border-gray-300 px-4 py-3 text-center font-bold text-gray-800;
+}
+
+.lineup-row {
+  @apply hover:bg-blue-50 transition-colors;
+}
+
+.lineup-row:hover {
+  @apply bg-blue-50;
+}
+
+.batting-order-cell {
+  @apply border border-gray-300 px-4 py-3 text-center font-medium text-gray-800 w-20;
+}
+
+.position-cell {
+  @apply border border-gray-300 px-4 py-3 text-center w-24;
+}
+
+.name-cell {
+  @apply border border-gray-300 px-4 py-3 text-center w-32;
+}
+
+.number-cell {
+  @apply border border-gray-300 px-4 py-3 text-center w-20;
+}
+
+.position-badge {
+  @apply bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium;
+}
+
+.empty-position, .empty-name, .empty-number {
+  @apply text-gray-400;
+}
+
+.player-info {
+  @apply flex items-center justify-center gap-2;
+}
+
+.player-name {
+  @apply font-medium text-gray-900;
+}
+
+.remove-btn {
+  @apply text-red-500 hover:text-red-700 text-lg font-bold w-5 h-5 flex items-center justify-center rounded-full hover:bg-red-100;
+}
+
+.player-number {
+  @apply bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium;
+}
+
+.position-info {
+  @apply grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg;
+}
+
+.info-section h3 {
+  @apply font-bold text-gray-800 mb-2 text-sm;
+}
+
+.position-list div {
+  @apply text-xs text-gray-600 mb-1;
+}
+
+.players-section {
+  @apply w-80 flex-shrink-0;
+}
+
+.players-section h3 {
+  @apply text-lg font-bold text-gray-900 mb-4;
+}
+
+.players-list {
+  @apply space-y-3 max-h-[600px] overflow-y-auto;
+}
+
+.player-card {
+  @apply border border-gray-200 rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow cursor-move;
+}
+
+.player-card:hover {
+  @apply border-blue-400;
+}
+
+.player-card-header {
+  @apply flex justify-between items-center mb-2;
+}
+
+.role-badge {
+  @apply px-2 py-1 rounded text-xs font-medium;
+}
+
+.loading {
+  @apply text-center py-8 text-gray-600;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -99,7 +224,8 @@
   }
   
   .form-textarea {
-    @apply w-full px-3 py-2 text-sm border border-gray-200 rounded-md resize-vertical transition-colors duration-200;
+    @apply w-full px-3 py-2 text-sm border border-gray-200 rounded-md transition-colors duration-200;
+    resize: vertical;
   }
   
   .form-textarea:focus {

@@ -4,11 +4,10 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from app.utils.database import engine, Base
-from app.routers import players, games, lineups
-# from app.routers import pdf  # TODO: PDF 서비스 구현 후 활성화
+from app.routers import players, games, lineups, pdf, auth
 
 # Import all models to ensure they are registered
-from app.models import player, game, lineup, lineup_player
+from app.models import player, game, lineup, lineup_player, user
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -25,17 +24,18 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include routers
+app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(players.router, prefix="/api/v1/players", tags=["players"])
 app.include_router(games.router, prefix="/api/v1/games", tags=["games"])
 app.include_router(lineups.router, prefix="/api/v1/lineups", tags=["lineups"])
-# app.include_router(pdf.router, prefix="/api/v1/pdf", tags=["pdf"])  # TODO: PDF 서비스 구현 후 활성화
+app.include_router(pdf.router, prefix="/api/v1/pdf", tags=["pdf"])
 
 @app.get("/")
 async def root():

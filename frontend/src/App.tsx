@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Players from './pages/Players'
@@ -8,15 +9,17 @@ import LineupList from './pages/LineupList'
 
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/players" element={<Players />} />
-        <Route path="/games" element={<Games />} />
-        <Route path="/lineup/editor" element={<LineupEditor />} />
-        <Route path="/lineup/list" element={<LineupList />} />
-      </Routes>
-    </Layout>
+    <AuthProvider>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/players" element={<Players />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/lineup/editor" element={<LineupEditor />} />
+          <Route path="/lineup/list" element={<LineupList />} />
+        </Routes>
+      </Layout>
+    </AuthProvider>
   )
 }
 

@@ -22,5 +22,5 @@ class LineupPlayer(Base):
     __table_args__ = (
         UniqueConstraint('lineup_id', 'position', name='uq_lineup_position'),
         UniqueConstraint('lineup_id', 'batting_order', name='uq_lineup_batting_order'),
-        CheckConstraint('batting_order >= 1 AND batting_order <= 9', name='ck_batting_order_range')
+        CheckConstraint('batting_order >= 0 AND batting_order <= 9', name='ck_batting_order_range')
     )

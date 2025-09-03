@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Date
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Date, Enum
 from sqlalchemy.sql import func
 from app.utils.database import Base
+from app.enums.player_role import PlayerRole
 
 class Player(Base):
     __tablename__ = "players"
@@ -8,9 +9,12 @@ class Player(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     number = Column(Integer, unique=True)
-    phone = Column(String(20))
+    phone = Column(String(20), nullable=False)
     email = Column(String(100))
     photo_url = Column(Text)
+    
+    # 선수 역할
+    role = Column(Enum(PlayerRole), default=PlayerRole.PLAYER, nullable=False)
     
     # 확장 가능한 필드들 (향후 추가 예정)
     age = Column(Integer)
@@ -21,6 +25,7 @@ class Player(Base):
     height = Column(Integer)  # cm
     weight = Column(Integer)  # kg
     join_date = Column(Date)
+    is_professional = Column(Boolean, default=False)  # 선수출신 여부
     notes = Column(Text)
     
     is_active = Column(Boolean, default=True)
