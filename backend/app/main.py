@@ -4,10 +4,10 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from app.utils.database import engine, Base
-from app.routers import players, games, lineups, pdf, auth
+from app.routers import players, games, lineups, pdf, auth, teams, venues
 
 # Import all models to ensure they are registered
-from app.models import player, game, lineup, lineup_player, user
+from app.models import player, game, lineup, lineup_player, user, team, venue
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -32,6 +32,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
+app.include_router(teams.router, prefix="/api/v1/teams", tags=["teams"])
+app.include_router(venues.router, prefix="/api/v1/venues", tags=["venues"])
 app.include_router(players.router, prefix="/api/v1/players", tags=["players"])
 app.include_router(games.router, prefix="/api/v1/games", tags=["games"])
 app.include_router(lineups.router, prefix="/api/v1/lineups", tags=["lineups"])

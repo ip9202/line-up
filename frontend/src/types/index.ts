@@ -1,6 +1,66 @@
 // 선수 역할 타입
 export type PlayerRole = '선수' | '감독' | '코치' | '총무' | '회장' | '고문'
 
+// 팀 타입
+export interface Team {
+  id: number
+  name: string
+  city?: string
+  league?: string
+  is_active: boolean
+  created_at: string
+  updated_at?: string
+}
+
+// 팀 생성/수정 타입
+export interface TeamCreate {
+  name: string
+  city?: string
+  league?: string
+  is_active?: boolean
+}
+
+export interface TeamUpdate {
+  name?: string
+  city?: string
+  league?: string
+  is_active?: boolean
+}
+
+// 경기장 타입
+export interface Venue {
+  id: number
+  name: string
+  location?: string
+  capacity?: number
+  surface_type?: string
+  is_indoor?: boolean
+  notes?: string
+  is_active: boolean
+  created_at: string
+  updated_at?: string
+}
+
+export interface VenueCreate {
+  name: string
+  location?: string
+  capacity?: number
+  surface_type?: string
+  is_indoor?: boolean
+  notes?: string
+  is_active?: boolean
+}
+
+export interface VenueUpdate {
+  name?: string
+  location?: string
+  capacity?: number
+  surface_type?: string
+  is_indoor?: boolean
+  notes?: string
+  is_active?: boolean
+}
+
 // 선수 타입
 export interface Player {
   id: number
@@ -69,33 +129,35 @@ export interface PlayerUpdate {
 // 경기 타입
 export interface Game {
   id: number
-  date: string
-  time: string
-  venue: string
-  opponent: string
+  game_date: string
+  venue_id: number
+  opponent_team_id: number
+  is_home: boolean
   game_type: string
   status: string
   notes?: string
   created_at: string
   updated_at?: string
+  opponent_team?: Team
+  venue?: Venue
 }
 
 // 경기 생성/수정 타입
 export interface GameCreate {
-  date: string
-  time: string
-  venue: string
-  opponent: string
+  game_date: string
+  venue_id: number
+  opponent_team_id: number
+  is_home: boolean
   game_type?: string
   status?: string
   notes?: string
 }
 
 export interface GameUpdate {
-  date?: string
-  time?: string
-  venue?: string
-  opponent?: string
+  game_date?: string
+  venue_id?: number
+  opponent_team_id?: number
+  is_home?: boolean
   game_type?: string
   status?: string
   notes?: string

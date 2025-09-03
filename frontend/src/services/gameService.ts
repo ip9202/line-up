@@ -1,4 +1,4 @@
-import api from '../lib/api'
+import { api } from '../contexts/AuthContext'
 import { Game, GameCreate, GameUpdate } from '../types'
 
 // 경기 목록 조회

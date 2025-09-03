@@ -39,6 +39,18 @@ export default function Header() {
                 홈
               </a>
               <a
+                href="/teams"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                팀 관리
+              </a>
+              <a
+                href="/venues"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                경기장 관리
+              </a>
+              <a
                 href="/players"
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
