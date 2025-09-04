@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Download, Printer, Eye, Edit, Trash2, ClipboardList } from 'lucide-react'
+import { Search, Printer, Eye, Edit, Trash2, ClipboardList } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function LineupList() {
@@ -98,10 +98,6 @@ export default function LineupList() {
                   </button>
                 )}
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Download className="h-3 w-3" />
-                  PDF
-                </button>
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Printer className="h-3 w-3" />
                   프린트
                 </button>
@@ -147,10 +143,6 @@ export default function LineupList() {
                   </button>
                 )}
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Download className="h-3 w-3" />
-                  PDF
-                </button>
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Printer className="h-3 w-3" />
                   프린트
                 </button>
@@ -195,10 +187,6 @@ export default function LineupList() {
                     수정
                   </button>
                 )}
-                <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
-                  <Download className="h-3 w-3" />
-                  PDF
-                </button>
                 <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                   <Printer className="h-3 w-3" />
                   프린트

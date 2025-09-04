@@ -4,10 +4,8 @@ import { useGames } from '../hooks/useGames'
 import { useLineups } from '../hooks/useLineups'
 import LineupEditor from '../components/LineupEditor'
 import { useAuth } from '../contexts/AuthContext'
-import { Calendar, Users, Target, ArrowLeft, ClipboardList, Download } from 'lucide-react'
+import { Calendar, Users, Target, ArrowLeft, ClipboardList } from 'lucide-react'
 import { createLineup } from '../services/lineupService'
-import { downloadLineupPDF } from '../services/pdfService'
-import { downloadLineupExcel } from '../services/excelService'
 
 export default function LineupEditorPage() {
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null)
@@ -49,34 +47,6 @@ export default function LineupEditorPage() {
     }
   }
 
-  // PDF 다운로드 함수
-  const handleDownloadPDF = async () => {
-    if (!selectedLineupId) {
-      alert('라인업이 선택되지 않았습니다.')
-      return
-    }
-    
-    try {
-      await downloadLineupPDF(selectedLineupId)
-    } catch (error) {
-      console.error('PDF 다운로드 실패:', error)
-      alert('PDF 다운로드에 실패했습니다.')
-    }
-  }
-
-  const handleDownloadExcel = async () => {
-    if (!selectedLineupId) {
-      alert('라인업이 선택되지 않았습니다.')
-      return
-    }
-    
-    try {
-      await downloadLineupExcel(selectedLineupId)
-    } catch (error) {
-      console.error('엑셀 다운로드 실패:', error)
-      alert('엑셀 다운로드에 실패했습니다.')
-    }
-  }
 
   // URL 파라미터에서 gameId 처리
   useEffect(() => {
@@ -236,26 +206,6 @@ export default function LineupEditorPage() {
                   {games?.find(g => g.id === selectedGameId)?.opponent_team?.name || '상대팀'} vs 우리팀
                 </p>
               </div>
-            </div>
-            <div className="flex items-center gap-3">
-              {selectedLineupId && (
-                <>
-                  <button
-                    onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    PDF 다운로드
-                  </button>
-                  <button
-                    onClick={handleDownloadExcel}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    엑셀 다운로드
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </div>
