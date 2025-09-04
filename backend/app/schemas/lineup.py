@@ -4,7 +4,7 @@ from datetime import datetime
 
 class LineupPlayerBase(BaseModel):
     player_id: int
-    position: str
+    position: Optional[str] = None
     batting_order: int
     is_starter: bool = True
 
@@ -35,6 +35,7 @@ class LineupResponse(LineupBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     lineup_players: List[LineupPlayerResponse] = []
+    game: Optional[dict] = None  # 경기 정보 포함
 
     class Config:
         from_attributes = True

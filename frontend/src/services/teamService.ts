@@ -1,4 +1,4 @@
-import { api } from '../contexts/AuthContext'
+import api from '@/lib/api'
 import { Team, TeamCreate, TeamUpdate } from '../types'
 
 const API_BASE_URL = '/teams'

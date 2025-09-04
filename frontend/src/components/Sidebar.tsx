@@ -3,22 +3,20 @@ import {
   Home, 
   Users, 
   Calendar, 
-  ClipboardList, 
-  FileText,
   Settings,
   X,
   Building2,
   MapPin
 } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
-const navigation = [
+// 전체 메뉴 (로그인하지 않은 상태에서도 모든 메뉴 표시)
+const fullNavigation = [
   { name: '대시보드', href: '/', icon: Home },
   { name: '팀 관리', href: '/teams', icon: Building2 },
   { name: '경기장 관리', href: '/venues', icon: MapPin },
   { name: '선수 관리', href: '/players', icon: Users },
   { name: '경기 관리', href: '/games', icon: Calendar },
-  { name: '라인업 생성', href: '/lineup/editor', icon: ClipboardList },
-  { name: '라인업 목록', href: '/lineup/list', icon: FileText },
   { name: '설정', href: '/settings', icon: Settings },
 ]
 
@@ -29,6 +27,10 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const location = useLocation()
+  const { user } = useAuth()
+  
+  // 모든 사용자에게 동일한 메뉴 표시
+  const navigation = fullNavigation
 
   return (
     <>

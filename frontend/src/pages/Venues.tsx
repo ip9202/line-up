@@ -91,11 +91,26 @@ export default function Venues() {
 
   return (
     <div className="space-y-6">
-      <div className="page-header">
-        <h1 className="page-title">경기장 관리</h1>
-        <p className="page-subtitle">
-          경기장 정보를 관리하고 경기 일정에 활용하세요.
-        </p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <MapPin className="h-6 w-6 text-blue-600" />
+              </div>
+              경기장 관리
+            </h1>
+            <p className="mt-2 text-gray-600">
+              경기장 정보를 관리하고 경기 일정에 활용하세요.
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">
+              {filteredVenues.length}
+            </div>
+            <div className="text-sm text-gray-500">총 경기장</div>
+          </div>
+        </div>
       </div>
 
       {/* Actions */}

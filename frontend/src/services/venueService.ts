@@ -1,4 +1,4 @@
-import { api } from '../contexts/AuthContext'
+import api from '@/lib/api'
 import { Venue, VenueCreate, VenueUpdate } from '../types'
 
 const API_BASE_URL = '/venues'

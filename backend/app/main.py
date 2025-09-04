@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from app.utils.database import engine, Base
-from app.routers import players, games, lineups, pdf, auth, teams, venues
+from app.routers import players, games, lineups, pdf, excel, auth, teams, venues
 
 # Import all models to ensure they are registered
 from app.models import player, game, lineup, lineup_player, user, team, venue
@@ -38,6 +38,7 @@ app.include_router(players.router, prefix="/api/v1/players", tags=["players"])
 app.include_router(games.router, prefix="/api/v1/games", tags=["games"])
 app.include_router(lineups.router, prefix="/api/v1/lineups", tags=["lineups"])
 app.include_router(pdf.router, prefix="/api/v1/pdf", tags=["pdf"])
+app.include_router(excel.router, prefix="/api/v1/excel", tags=["excel"])
 
 @app.get("/")
 async def root():

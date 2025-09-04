@@ -23,6 +23,9 @@ httpx>=0.24.0
 reportlab>=4.0.0
 Pillow>=10.0.0
 
+# Excel Generation
+openpyxl>=3.1.0
+
 # Authentication
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4

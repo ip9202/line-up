@@ -7,7 +7,7 @@ import Venues from './pages/Venues'
 import Players from './pages/Players'
 import Games from './pages/Games'
 import LineupEditor from './pages/LineupEditor'
-import LineupList from './pages/LineupList'
+import LineupView from './pages/LineupView'
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
           <Route path="/players" element={<Players />} />
           <Route path="/games" element={<Games />} />
           <Route path="/lineup/editor" element={<LineupEditor />} />
-          <Route path="/lineup/list" element={<LineupList />} />
+          <Route path="/lineup/view" element={<LineupView />} />
         </Routes>
       </Layout>
     </AuthProvider>

@@ -1,4 +1,4 @@
-import api from '../lib/api'
+import api from '@/lib/api'
 import { Player, PlayerCreate, PlayerUpdate } from '../types'
 
 // 선수 목록 조회

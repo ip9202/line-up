@@ -1,4 +1,4 @@
-import { Users, Calendar, ClipboardList, FileText } from 'lucide-react'
+import { Users, Calendar, ClipboardList, FileText, Home } from 'lucide-react'
 
 const stats = [
   {
@@ -34,11 +34,26 @@ const stats = [
 export default function Dashboard() {
   return (
     <div className="space-y-6">
-      <div className="page-header">
-        <h1 className="page-title">대시보드</h1>
-        <p className="page-subtitle">
-          야구 라인업 관리 시스템에 오신 것을 환영합니다.
-        </p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Home className="h-6 w-6 text-blue-600" />
+              </div>
+              대시보드
+            </h1>
+            <p className="mt-2 text-gray-600">
+              야구 라인업 관리 시스템에 오신 것을 환영합니다.
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.reduce((sum, stat) => sum + parseInt(stat.value), 0)}
+            </div>
+            <div className="text-sm text-gray-500">총 데이터</div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}

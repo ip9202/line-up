@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Calendar, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useGames, useCreateGame, useUpdateGame, useDeleteGame } from '../hooks/useGames'
@@ -9,6 +10,7 @@ export default function Games() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
+  const navigate = useNavigate()
   
   // 인증 상태
   const { user, isAuthenticated } = useAuth()
@@ -35,7 +37,7 @@ export default function Games() {
   // 필터링된 경기 목록
   const filteredGames = games.filter(game => 
     game.opponent_team?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    game.venue?.toLowerCase().includes(searchTerm.toLowerCase())
+    game.venue?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // 이벤트 핸들러들
@@ -82,11 +84,26 @@ export default function Games() {
 
   return (
     <div className="space-y-6">
-      <div className="page-header">
-        <h1 className="page-title">경기 관리</h1>
-        <p className="page-subtitle">
-          경기 일정을 관리하고 라인업을 준비하세요.
-        </p>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
+              경기 관리
+            </h1>
+            <p className="mt-2 text-gray-600">
+              경기 일정을 관리하고 라인업을 준비하세요.
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">
+              {games.length}
+            </div>
+            <div className="text-sm text-gray-500">총 경기</div>
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
@@ -170,7 +187,18 @@ export default function Games() {
                 
                 <div className="mt-6 pt-4 border-t border-gray-100">
                   <div className="flex gap-2">
-                    <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-colors">
+                    <button 
+                      onClick={() => {
+                        if (user?.role === '감독') {
+                          // 감독은 라인업 편집 페이지로
+                          navigate(`/lineup/editor?gameId=${game.id}`)
+                        } else {
+                          // 선수는 라인업 보기 페이지로
+                          navigate(`/lineup/view?gameId=${game.id}`)
+                        }
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-colors"
+                    >
                       <Eye className="h-4 w-4" />
                       라인업
                     </button>

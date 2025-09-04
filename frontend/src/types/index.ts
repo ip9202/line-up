@@ -181,6 +181,22 @@ export interface Lineup {
   created_at: string
   updated_at?: string
   lineup_players: LineupPlayer[]
+  game?: {
+    id: number
+    game_date: string
+    is_home: boolean
+    game_type: string
+    status: string
+    opponent_team?: {
+      id: number
+      name: string
+    }
+    venue?: {
+      id: number
+      name: string
+      location?: string
+    }
+  }
 }
 
 // 라인업 생성/수정 타입

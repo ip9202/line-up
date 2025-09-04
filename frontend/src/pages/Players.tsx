@@ -744,6 +744,7 @@ export default function Players() {
                           onClick={() => {
                             setEditingPlayer(viewingPlayer)
                             setViewingPlayer(null)
+                            setShowForm(true)
                           }}
                           className="w-full flex items-center gap-2 p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-blue-700 font-medium text-sm"
                         >
