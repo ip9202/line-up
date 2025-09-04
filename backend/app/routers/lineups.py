@@ -86,10 +86,40 @@ async def get_lineup(lineup_id: int, db: Session = Depends(get_db)):
     from app.models.game import Game
     from app.models.team import Team
     from app.models.venue import Venue
+    from app.models.player import Player
+    from sqlalchemy.orm import joinedload
     
-    lineup = db.query(Lineup).filter(Lineup.id == lineup_id).first()
+    # 선수 정보를 함께 로드
+    lineup = db.query(Lineup).options(
+        joinedload(Lineup.lineup_players).joinedload(LineupPlayer.player)
+    ).filter(Lineup.id == lineup_id).first()
+    
     if not lineup:
         raise HTTPException(status_code=404, detail="Lineup not found")
+    
+    # 라인업 플레이어들에 선수 정보 추가
+    lineup_players_with_details = []
+    for lineup_player in lineup.lineup_players:
+        lineup_player_dict = {
+            "id": lineup_player.id,
+            "player_id": lineup_player.player_id,
+            "position": lineup_player.position,
+            "batting_order": lineup_player.batting_order,
+            "is_starter": lineup_player.is_starter,
+            "created_at": lineup_player.created_at,
+            "player": {
+                "id": lineup_player.player.id,
+                "name": lineup_player.player.name,
+                "number": lineup_player.player.number,
+                "phone": lineup_player.player.phone,
+                "email": lineup_player.player.email,
+                "role": lineup_player.player.role,
+                "age": lineup_player.player.age,
+                "is_professional": lineup_player.player.is_professional,
+                "is_active": lineup_player.player.is_active
+            } if lineup_player.player else None
+        }
+        lineup_players_with_details.append(lineup_player_dict)
     
     # 경기 정보 조회
     game = db.query(Game).filter(Game.id == lineup.game_id).first()
@@ -125,7 +155,7 @@ async def get_lineup(lineup_id: int, db: Session = Depends(get_db)):
             "is_default": lineup.is_default,
             "created_at": lineup.created_at,
             "updated_at": lineup.updated_at,
-            "lineup_players": lineup.lineup_players,
+            "lineup_players": lineup_players_with_details,
             "game": game_data
         }
         return lineup_dict

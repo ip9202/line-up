@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Search, Printer, Eye, Edit, Trash2, ClipboardList } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Search, Printer, Eye, Edit, Trash2, ClipboardList, FileText } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function LineupList() {
   const [searchTerm, setSearchTerm] = useState('')
+  const navigate = useNavigate()
   
   // 인증 상태
   const { user, isAuthenticated } = useAuth()
@@ -91,6 +93,13 @@ export default function LineupList() {
                   <Eye className="h-3 w-3" />
                   보기
                 </button>
+                <button 
+                  onClick={() => window.open('/lineup/sheet/1', '_blank')}
+                  className="btn btn-secondary text-sm flex items-center justify-center gap-1"
+                >
+                  <FileText className="h-3 w-3" />
+                  시트
+                </button>
                 {canEditLineup() && (
                   <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                     <Edit className="h-3 w-3" />
@@ -136,6 +145,13 @@ export default function LineupList() {
                   <Eye className="h-3 w-3" />
                   보기
                 </button>
+                <button 
+                  onClick={() => window.open('/lineup/sheet/1', '_blank')}
+                  className="btn btn-secondary text-sm flex items-center justify-center gap-1"
+                >
+                  <FileText className="h-3 w-3" />
+                  시트
+                </button>
                 {canEditLineup() && (
                   <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">
                     <Edit className="h-3 w-3" />
@@ -180,6 +196,13 @@ export default function LineupList() {
                 <button className="btn btn-primary text-sm flex-1 flex items-center justify-center gap-1">
                   <Eye className="h-3 w-3" />
                   보기
+                </button>
+                <button 
+                  onClick={() => window.open('/lineup/sheet/1', '_blank')}
+                  className="btn btn-secondary text-sm flex items-center justify-center gap-1"
+                >
+                  <FileText className="h-3 w-3" />
+                  시트
                 </button>
                 {canEditLineup() && (
                   <button className="btn btn-secondary text-sm flex items-center justify-center gap-1">

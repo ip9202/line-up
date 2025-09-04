@@ -8,6 +8,7 @@ import Players from './pages/Players'
 import Games from './pages/Games'
 import LineupEditor from './pages/LineupEditor'
 import LineupView from './pages/LineupView'
+import LineupSheetPage from './pages/LineupSheetPage'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/games" element={<Games />} />
           <Route path="/lineup/editor" element={<LineupEditor />} />
           <Route path="/lineup/view" element={<LineupView />} />
+          <Route path="/lineup/sheet/:lineupId" element={<LineupSheetPage />} />
         </Routes>
       </Layout>
     </AuthProvider>

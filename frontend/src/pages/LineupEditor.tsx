@@ -4,7 +4,7 @@ import { useGames } from '../hooks/useGames'
 import { useLineups } from '../hooks/useLineups'
 import LineupEditor from '../components/LineupEditor'
 import { useAuth } from '../contexts/AuthContext'
-import { Calendar, Users, Target, ArrowLeft, ClipboardList } from 'lucide-react'
+import { Calendar, Users, Target, ArrowLeft, ClipboardList, FileText } from 'lucide-react'
 import { createLineup } from '../services/lineupService'
 
 export default function LineupEditorPage() {
@@ -206,6 +206,17 @@ export default function LineupEditorPage() {
                   {games?.find(g => g.id === selectedGameId)?.opponent_team?.name || '상대팀'} vs 우리팀
                 </p>
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {selectedLineupId && (
+                <button
+                  onClick={() => window.open(`/lineup/sheet/${selectedLineupId}`, '_blank')}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                >
+                  <FileText className="h-4 w-4" />
+                  시트 보기
+                </button>
+              )}
             </div>
           </div>
         </div>

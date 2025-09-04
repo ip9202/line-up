@@ -11,8 +11,23 @@ class LineupPlayerBase(BaseModel):
 class LineupPlayerCreate(LineupPlayerBase):
     pass
 
+class PlayerInfo(BaseModel):
+    id: int
+    name: str
+    number: Optional[int] = None
+    phone: str
+    email: Optional[str] = None
+    role: str
+    age: Optional[int] = None
+    is_professional: bool
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
 class LineupPlayerResponse(LineupPlayerBase):
     id: int
+    player: Optional[PlayerInfo] = None
 
     class Config:
         from_attributes = True
