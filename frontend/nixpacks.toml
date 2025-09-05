@@ -2,16 +2,10 @@
 nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
-cmds = [
-    "npm ci --verbose"
-]
+cmds = ["npm ci"]
 
 [phases.build]
-cmds = [
-    "ls -la src/lib/",
-    "ls -la src/pages/",
-    "npm run build"
-]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm run preview -- --host 0.0.0.0 --port $PORT"
