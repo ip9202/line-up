@@ -6,14 +6,18 @@ cmds = ["npm ci"]
 
 [phases.build]
 cmds = [
-    "echo '=== Railway Root Directory Workaround ==='",
-    "echo 'Checking if we need to navigate to frontend directory'",
+    "echo '=== Railway Root Directory Fix ==='",
     "pwd",
+    "echo 'Current directory contents:'",
     "ls -la",
-    "if [ -d 'frontend' ]; then echo 'Found frontend dir, copying files'; cp -r frontend/* .; fi",
-    "echo '=== After potential copy ==='",
-    "ls -la src/ || echo 'No src directory'",
-    "ls -la src/lib/ || echo 'No src/lib directory'",
+    "echo 'Looking for project structure...'",
+    "find . -name 'package.json' -type f | head -5",
+    "echo 'Checking for frontend subdirectory...'",
+    "if [ -d './frontend' ]; then echo 'ERROR: We are in ROOT, not frontend directory!'; echo 'This means Railway Root Directory setting is not working'; echo 'Files in ./frontend:'; ls -la ./frontend/ | head -10; echo 'Copying frontend files to current directory...'; cp -r ./frontend/* . && echo 'Copy completed'; else echo 'We are in the correct directory'; fi",
+    "echo 'Final directory structure:'",
+    "ls -la src/ 2>/dev/null || echo 'No src directory found'",
+    "ls -la src/lib/ 2>/dev/null || echo 'No src/lib directory found'",
+    "echo 'Starting build...'",
     "npm run build"
 ]
 
