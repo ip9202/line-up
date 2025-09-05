@@ -7,7 +7,7 @@ import PlayerCard from './PlayerCard'
 import { Search, Filter, Users, Target, AlertCircle, Calendar, MapPin, X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { getAttendance, updateAttendance } from '../services/attendanceService'
-import api from '../lib/api'
+import api from '@/lib/api'
 
 interface LineupEditorProps {
   lineupId: number
