@@ -5,13 +5,7 @@ nixPkgs = ["nodejs-18_x"]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = [
-    "echo '=== Railway Directory Fix ==='",
-    "if [ -d './frontend' ]; then echo 'In ROOT - copying frontend files'; cp -r ./frontend/* .; else echo 'In correct directory'; fi",
-    "echo 'Checking src/lib:'",
-    "ls -la src/lib/ || echo 'No src/lib found'",
-    "npm run build"
-]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm run preview -- --host 0.0.0.0 --port $PORT"
