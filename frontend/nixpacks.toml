@@ -6,15 +6,14 @@ cmds = ["npm ci"]
 
 [phases.build]
 cmds = [
-    "echo '=== Build Directory Structure ==='",
+    "echo '=== Railway Root Directory Workaround ==='",
+    "echo 'Checking if we need to navigate to frontend directory'",
     "pwd",
     "ls -la",
-    "echo '=== src Directory ==='", 
-    "ls -la src/",
-    "echo '=== src/lib Directory ==='",
-    "ls -la src/lib/ || echo 'src/lib/ does not exist'",
-    "echo '=== Looking for api files ==='",
-    "find . -name '*api*' -type f",
+    "if [ -d 'frontend' ]; then echo 'Found frontend dir, copying files'; cp -r frontend/* .; fi",
+    "echo '=== After potential copy ==='",
+    "ls -la src/ || echo 'No src directory'",
+    "ls -la src/lib/ || echo 'No src/lib directory'",
     "npm run build"
 ]
 
