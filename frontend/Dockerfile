@@ -12,7 +12,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application (TypeScript 체크 없이)
 RUN npm run build
 
 # Expose port
