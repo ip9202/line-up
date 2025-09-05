@@ -1,4 +1,4 @@
-import api from '@/lib/api'
+import api from '../lib/api'
 import { Lineup, LineupCreate, LineupUpdate, LineupPlayerCreate } from '../types'
 
 // 라인업 목록 조회
