@@ -12,4 +12,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd backend && ./venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+cmd = "cd backend && echo 'Starting FastAPI...' && ls -la && ./venv/bin/python -c 'import app.main; print(\"App imported successfully\")' && ./venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --log-level debug"
