@@ -31,12 +31,20 @@ export default function Teams() {
     return isAuthenticated && user?.role === '총무'
   }
 
-  // 검색 필터링
-  const filteredTeams = teams.filter(team =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (team.city && team.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (team.league && team.league.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  // 검색 필터링 및 정렬
+  const filteredTeams = teams
+    .filter(team =>
+      team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (team.city && team.city.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (team.league && team.league.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      // 우리팀을 제일 앞으로 정렬
+      if (a.is_our_team && !b.is_our_team) return -1
+      if (!a.is_our_team && b.is_our_team) return 1
+      // 그 외는 이름순 정렬
+      return a.name.localeCompare(b.name)
+    })
 
   // 핸들러 함수들
   const handleAddTeam = () => {
@@ -52,12 +60,31 @@ export default function Teams() {
   }
 
   const handleDeleteTeam = async (team: Team) => {
+    console.log('팀 삭제 시도:', { team: team.name, isAuthenticated, user: user?.role })
+    console.log('토큰 확인:', localStorage.getItem('auth_token'))
+    
     if (window.confirm(`"${team.name}" 팀을 삭제하시겠습니까?`)) {
       try {
         await deleteTeamMutation.mutateAsync(team.id)
-      } catch (error) {
+      } catch (error: any) {
         console.error('팀 삭제 실패:', error)
-        alert('팀 삭제에 실패했습니다.')
+        console.error('에러 상세:', error.response?.data)
+        
+        // 연결된 데이터가 있는 경우의 에러 처리
+        if (error.response?.status === 400) {
+          const errorMessage = error.response.data.detail
+          if (errorMessage.includes('연결된 경기')) {
+            alert('연결된 경기가 있습니다. 먼저 경기를 삭제해 주세요.')
+          } else if (errorMessage.includes('소속된 선수')) {
+            alert('소속된 선수가 있습니다. 선수 관리에서 팀을 변경하거나 선수를 삭제해 주세요.')
+          } else {
+            alert(errorMessage)
+          }
+        } else if (error.response?.status === 401) {
+          alert('인증이 필요합니다. 다시 로그인해 주세요.')
+        } else {
+          alert('팀 삭제에 실패했습니다.')
+        }
       }
     }
   }
@@ -128,12 +155,23 @@ export default function Teams() {
       {filteredTeams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTeams.map((team) => (
-            <div key={team.id} className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all duration-200 group">
+            <div key={team.id} className={`rounded-xl border p-6 hover:shadow-lg transition-all duration-200 group ${
+              team.is_our_team 
+                ? 'bg-blue-50 border-blue-200 hover:border-blue-400 hover:shadow-blue-100' 
+                : 'bg-white border-gray-200 hover:border-blue-300'
+            }`}>
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    {team.name}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {team.name}
+                    </h3>
+                    {team.is_our_team && (
+                      <span className="px-2 py-1 text-xs font-bold text-white bg-blue-600 rounded-full shadow-sm">
+                        우리팀
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                       team.is_active 

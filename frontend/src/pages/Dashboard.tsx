@@ -1,37 +1,97 @@
 import { Users, Calendar, ClipboardList, FileText, Home } from 'lucide-react'
-
-const stats = [
-  {
-    name: '총 선수',
-    value: '25',
-    icon: Users,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
-  },
-  {
-    name: '예정된 경기',
-    value: '3',
-    icon: Calendar,
-    color: 'text-green-600',
-    bgColor: 'bg-green-100',
-  },
-  {
-    name: '저장된 라인업',
-    value: '12',
-    icon: ClipboardList,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
-  },
-  {
-    name: '이번 달 경기',
-    value: '8',
-    icon: FileText,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-100',
-  },
-]
+import { usePlayers } from '../hooks/usePlayers'
+import { useGames } from '../hooks/useGames'
+import { useLineups } from '../hooks/useLineups'
 
 export default function Dashboard() {
+  // 실데이터 가져오기
+  const { data: playersData, isLoading: playersLoading } = usePlayers()
+  const { data: games, isLoading: gamesLoading } = useGames()
+  const { data: lineups, isLoading: lineupsLoading } = useLineups()
+
+  // 데이터 처리
+  const players = playersData || []
+  const totalPlayers = players.length
+  const activePlayers = players.filter(p => p.is_active).length
+  
+  // 예정된 경기 (SCHEDULED 상태)
+  const scheduledGames = games?.filter(g => g.status === 'SCHEDULED') || []
+  const scheduledGamesCount = scheduledGames.length
+  
+  // 저장된 라인업
+  const totalLineups = lineups?.length || 0
+  
+  // 이번 달 경기 (현재 월의 경기)
+  const currentMonth = new Date().getMonth()
+  const currentYear = new Date().getFullYear()
+  const thisMonthGames = games?.filter(g => {
+    const gameDate = new Date(g.game_date)
+    return gameDate.getMonth() === currentMonth && gameDate.getFullYear() === currentYear
+  }) || []
+  const thisMonthGamesCount = thisMonthGames.length
+
+  // 통계 데이터
+  const stats = [
+    {
+      name: '총 선수',
+      value: totalPlayers.toString(),
+      icon: Users,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100',
+    },
+    {
+      name: '예정된 경기',
+      value: scheduledGamesCount.toString(),
+      icon: Calendar,
+      color: 'text-green-600',
+      bgColor: 'bg-green-100',
+    },
+    {
+      name: '저장된 라인업',
+      value: totalLineups.toString(),
+      icon: ClipboardList,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100',
+    },
+    {
+      name: '이번 달 경기',
+      value: thisMonthGamesCount.toString(),
+      icon: FileText,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-100',
+    },
+  ]
+
+  // 최근 경기 (최신 3개)
+  const recentGames = games?.slice(0, 3) || []
+  
+  // 최근 라인업 (최신 3개)
+  const recentLineups = lineups?.slice(0, 3) || []
+
+  // 로딩 상태
+  if (playersLoading || gamesLoading || lineupsLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="card">
+              <div className="card-body">
+                <div className="animate-pulse">
+                  <div className="h-16 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -83,24 +143,54 @@ export default function Dashboard() {
           </div>
           <div className="card-body">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">vs LG 트윈스</p>
-                  <p className="text-sm text-gray-500">2024-12-25 14:00</p>
-                </div>
-                <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                  예정
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">vs 두산 베어스</p>
-                  <p className="text-sm text-gray-500">2024-12-22 18:30</p>
-                </div>
-                <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                  완료
-                </span>
-              </div>
+              {recentGames.length > 0 ? (
+                recentGames.map((game) => {
+                  const gameDate = new Date(game.game_date)
+                  const formattedDate = gameDate.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })
+                  
+                  const getStatusColor = (status: string) => {
+                    switch (status) {
+                      case 'SCHEDULED': return 'bg-green-100 text-green-800'
+                      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800'
+                      case 'COMPLETED': return 'bg-gray-100 text-gray-800'
+                      case 'CANCELLED': return 'bg-red-100 text-red-800'
+                      default: return 'bg-gray-100 text-gray-800'
+                    }
+                  }
+                  
+                  const getStatusText = (status: string) => {
+                    switch (status) {
+                      case 'SCHEDULED': return '예정'
+                      case 'IN_PROGRESS': return '진행중'
+                      case 'COMPLETED': return '완료'
+                      case 'CANCELLED': return '취소'
+                      default: return status
+                    }
+                  }
+                  
+                  return (
+                    <div key={game.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          vs {game.opponent_team?.name || '상대팀'}
+                        </p>
+                        <p className="text-sm text-gray-500">{formattedDate}</p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(game.status)}`}>
+                        {getStatusText(game.status)}
+                      </span>
+                    </div>
+                  )
+                })
+              ) : (
+                <p className="text-sm text-gray-500">등록된 경기가 없습니다.</p>
+              )}
             </div>
           </div>
         </div>
@@ -111,24 +201,36 @@ export default function Dashboard() {
           </div>
           <div className="card-body">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">12월 25일 라인업</p>
-                  <p className="text-sm text-gray-500">vs LG 트윈스</p>
-                </div>
-                <span className="px-2 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded-full">
-                  기본
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900">12월 22일 라인업</p>
-                  <p className="text-sm text-gray-500">vs 두산 베어스</p>
-                </div>
-                <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                  백업
-                </span>
-              </div>
+              {recentLineups.length > 0 ? (
+                recentLineups.map((lineup) => {
+                  const lineupDate = new Date(lineup.created_at)
+                  const formattedDate = lineupDate.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                  })
+                  
+                  return (
+                    <div key={lineup.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {lineup.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {lineup.game?.opponent_team?.name ? `vs ${lineup.game.opponent_team.name}` : '경기 정보 없음'}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        lineup.is_default ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {lineup.is_default ? '기본' : '백업'}
+                      </span>
+                    </div>
+                  )
+                })
+              ) : (
+                <p className="text-sm text-gray-500">등록된 라인업이 없습니다.</p>
+              )}
             </div>
           </div>
         </div>

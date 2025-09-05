@@ -96,7 +96,10 @@ async def delete_venue(
     from app.models.game import Game
     games_using_venue = db.query(Game).filter(Game.venue_id == venue_id).count()
     if games_using_venue > 0:
-        raise HTTPException(status_code=400, detail=f"이 경기장을 사용하는 경기가 {games_using_venue}개 있습니다. 먼저 해당 경기들을 수정하거나 삭제해주세요.")
+        raise HTTPException(
+            status_code=400, 
+            detail="연결된 경기가 있습니다. 먼저 경기를 삭제해 주세요."
+        )
     
     db.delete(venue)
     db.commit()

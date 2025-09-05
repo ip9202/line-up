@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { User, LoginRequest, LoginResponse } from '../types/auth'
 
@@ -43,8 +44,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   // 로그인 뮤테이션
   const loginMutation = useMutation({
@@ -84,7 +87,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // 모든 쿼리 캐시 무효화
     queryClient.clear()
-  }, [queryClient])
+    
+    // 메인페이지로 이동
+    navigate('/')
+  }, [queryClient, navigate])
 
   // 컴포넌트 마운트 시 저장된 인증 정보 복원
   useEffect(() => {
@@ -105,6 +111,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         logout()
       }
     }
+    
+    // 로딩 완료
+    setIsLoading(false)
   }, [logout])
 
   // 상태 변경 디버깅
@@ -118,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     login: loginMutation.mutate,
     logout,
-    isLoading: loginMutation.isPending,
+    isLoading: isLoading || loginMutation.isPending,
     error: loginMutation.error,
   }
 

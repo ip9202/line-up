@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Calendar, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useGames, useCreateGame, useUpdateGame, useDeleteGame } from '../hooks/useGames'
+import { getGameLineupsCount } from '../services/gameService'
+import { useLineups } from '../hooks/useLineups'
 import { Game } from '../types'
 import GameForm from '../components/GameForm'
 
@@ -17,6 +19,7 @@ export default function Games() {
 
   // API hooks
   const { data: games = [], isLoading } = useGames()
+  const { data: lineups } = useLineups()
   const createGameMutation = useCreateGame()
   const updateGameMutation = useUpdateGame()
   const deleteGameMutation = useDeleteGame()
@@ -52,12 +55,30 @@ export default function Games() {
   }
 
   const handleDeleteGame = async (game: Game) => {
-    if (window.confirm(`"${game.opponent_team?.name || '상대팀'}" 경기를 삭제하시겠습니까?`)) {
+    const opponentName = game.opponent_team?.name || '상대팀'
+    const gameDate = new Date(game.game_date).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    
+    const confirmMessage = `"${opponentName}" 경기를 삭제하시겠습니까?\n\n` +
+      `경기 일시: ${gameDate}`
+    
+    if (window.confirm(confirmMessage)) {
       try {
         await deleteGameMutation.mutateAsync(game.id)
-      } catch (error) {
+      } catch (error: any) {
         console.error('경기 삭제 실패:', error)
-        alert('경기 삭제에 실패했습니다.')
+        
+        // 연결된 라인업이 있는 경우의 에러 처리
+        if (error.response?.status === 400) {
+          alert(error.response.data.detail || '연결된 오더지가 있습니다. 먼저 오더지를 삭제해 주세요.')
+        } else {
+          alert('경기 삭제에 실패했습니다.')
+        }
       }
     }
   }
@@ -193,8 +214,13 @@ export default function Games() {
                           // 감독은 라인업 편집 페이지로
                           navigate(`/lineup/editor?gameId=${game.id}`)
                         } else {
-                          // 선수는 라인업 보기 페이지로
-                          navigate(`/lineup/view?gameId=${game.id}`)
+                          // 그 외의 경우: 라인업이 있으면 라인업 시트로, 없으면 메시지 표시
+                          const gameLineups = lineups?.filter(lineup => lineup.game_id === game.id) || []
+                          if (gameLineups.length === 0) {
+                            alert('선수오더가 아직 작성되지 않았습니다.')
+                          } else {
+                            navigate(`/lineup/sheet/${gameLineups[0].id}`)
+                          }
                         }
                       }}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-colors"

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from app.utils.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserResponse, Token
+from app.schemas.user import UserCreate, UserResponse, Token, PasswordChange
 from app.utils.auth import verify_password, get_password_hash, create_access_token
 from app.dependencies.auth import get_current_user
 # from app.enums.user_role import UserRole  # 문자열로 변경
@@ -74,3 +74,26 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
 async def read_users_me(current_user: User = Depends(get_current_user)):
     """현재 사용자 정보 조회"""
     return current_user
+
+@router.post("/change-password")
+async def change_password(
+    password_data: PasswordChange,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """비밀번호 변경"""
+    # 현재 비밀번호 확인
+    if not verify_password(password_data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="현재 비밀번호가 올바르지 않습니다."
+        )
+    
+    # 새 비밀번호 해시화
+    new_password_hash = get_password_hash(password_data.new_password)
+    
+    # 비밀번호 업데이트
+    current_user.password_hash = new_password_hash
+    db.commit()
+    
+    return {"message": "비밀번호가 성공적으로 변경되었습니다."}

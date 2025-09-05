@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Teams from './pages/Teams'
 import Venues from './pages/Venues'
@@ -9,6 +10,7 @@ import Games from './pages/Games'
 import LineupEditor from './pages/LineupEditor'
 import LineupView from './pages/LineupView'
 import LineupSheetPage from './pages/LineupSheetPage'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -23,6 +25,11 @@ function App() {
           <Route path="/lineup/editor" element={<LineupEditor />} />
           <Route path="/lineup/view" element={<LineupView />} />
           <Route path="/lineup/sheet/:lineupId" element={<LineupSheetPage />} />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } />
         </Routes>
       </Layout>
     </AuthProvider>

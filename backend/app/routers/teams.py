@@ -99,9 +99,28 @@ async def delete_team(
     current_user = Depends(require_manager_role)
 ):
     """팀 삭제"""
+    from app.models.game import Game
+    from app.models.player import Player
+    
     team = db.query(Team).filter(Team.id == team_id).first()
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
+    
+    # 1단계: 연결된 경기가 있는지 확인 (상대팀으로 참조되는 경기)
+    existing_games = db.query(Game).filter(Game.opponent_team_id == team_id).count()
+    if existing_games > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="연결된 경기가 있습니다. 먼저 경기를 삭제해 주세요."
+        )
+    
+    # 2단계: 연결된 선수가 있는지 확인
+    existing_players = db.query(Player).filter(Player.team_id == team_id).count()
+    if existing_players > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="소속된 선수가 있습니다. 선수 관리에서 팀을 변경하거나 선수를 삭제해 주세요."
+        )
     
     db.delete(team)
     db.commit()

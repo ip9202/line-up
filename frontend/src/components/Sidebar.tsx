@@ -10,13 +10,17 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
-// 전체 메뉴 (로그인하지 않은 상태에서도 모든 메뉴 표시)
-const fullNavigation = [
+// 공통 메뉴 (로그인하지 않은 상태에서도 표시)
+const publicNavigation = [
   { name: '대시보드', href: '/', icon: Home },
   { name: '팀 관리', href: '/teams', icon: Building2 },
   { name: '경기장 관리', href: '/venues', icon: MapPin },
   { name: '선수 관리', href: '/players', icon: Users },
   { name: '경기 관리', href: '/games', icon: Calendar },
+]
+
+// 인증된 사용자만 볼 수 있는 메뉴
+const authenticatedNavigation = [
   { name: '설정', href: '/settings', icon: Settings },
 ]
 
@@ -27,10 +31,12 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const location = useLocation()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   
-  // 모든 사용자에게 동일한 메뉴 표시
-  const navigation = fullNavigation
+  // 인증 상태에 따라 메뉴 구성
+  const navigation = isAuthenticated 
+    ? [...publicNavigation, ...authenticatedNavigation]
+    : publicNavigation
 
   return (
     <>

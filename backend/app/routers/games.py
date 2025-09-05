@@ -185,10 +185,33 @@ async def delete_game(
     current_user = Depends(require_manager_role)
 ):
     """경기 삭제"""
+    from app.models.lineup import Lineup
+    
     game = db.query(Game).filter(Game.id == game_id).first()
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
     
+    # 연결된 라인업이 있는지 확인
+    existing_lineups = db.query(Lineup).filter(Lineup.game_id == game_id).count()
+    if existing_lineups > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="연결된 오더지가 있습니다. 먼저 오더지를 삭제해 주세요."
+        )
+    
     db.delete(game)
     db.commit()
     return {"message": "Game deleted successfully"}
+
+@router.get("/{game_id}/lineups/count")
+async def get_game_lineups_count(game_id: int, db: Session = Depends(get_db)):
+    """경기의 라인업 개수 조회"""
+    from app.models.lineup import Lineup
+    
+    game = db.query(Game).filter(Game.id == game_id).first()
+    if not game:
+        raise HTTPException(status_code=404, detail="Game not found")
+    
+    lineups_count = db.query(Lineup).filter(Lineup.game_id == game_id).count()
+    
+    return {"lineups_count": lineups_count}

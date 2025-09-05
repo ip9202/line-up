@@ -61,8 +61,13 @@ export default function Venues() {
         await deleteVenueMutation.mutateAsync(venue.id)
       } catch (error: any) {
         console.error('경기장 삭제 실패:', error)
-        const errorMessage = error?.response?.data?.detail || '경기장 삭제에 실패했습니다.'
-        alert(errorMessage)
+        
+        // 연결된 경기가 있는 경우의 에러 처리
+        if (error.response?.status === 400) {
+          alert(error.response.data.detail || '연결된 경기가 있습니다. 먼저 경기를 삭제해 주세요.')
+        } else {
+          alert('경기장 삭제에 실패했습니다.')
+        }
       }
     }
   }

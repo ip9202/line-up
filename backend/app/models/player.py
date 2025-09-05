@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Date, Enum
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Date, Enum, ForeignKey
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.utils.database import Base
 from app.enums.player_role import PlayerRole
 
@@ -12,6 +13,9 @@ class Player(Base):
     phone = Column(String(20), nullable=False)
     email = Column(String(100))
     photo_url = Column(Text)
+    
+    # 팀 연결
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
     
     # 선수 역할
     role = Column(Enum(PlayerRole), default=PlayerRole.PLAYER, nullable=False)

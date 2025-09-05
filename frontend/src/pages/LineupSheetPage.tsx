@@ -7,7 +7,7 @@ import { useTeams } from '../hooks/useTeams'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
 import LineupSheet from '../components/LineupSheet'
-import { ArrowLeft, Printer, Download } from 'lucide-react'
+import { ArrowLeft, Printer } from 'lucide-react'
 
 export default function LineupSheetPage() {
   const { lineupId } = useParams<{ lineupId: string }>()
@@ -52,12 +52,19 @@ export default function LineupSheetPage() {
       return
     }
 
-    console.log('프린트 데이터 확인:', {
-      lineup,
-      selectedGame,
-      players,
-      ourTeam
-    })
+              console.log('프린트 데이터 확인:', {
+            lineup,
+            selectedGame,
+            players,
+            ourTeam
+          })
+          
+          console.log('선수 데이터 상세:', players?.map(p => ({
+            id: p.id,
+            name: p.name,
+            number: p.number,
+            numberType: typeof p.number
+          })))
     
     // 감독 찾기 테스트
     const managerPlayer = players.find(p => p.role === '감독')
@@ -123,19 +130,26 @@ export default function LineupSheetPage() {
               margin-bottom: 20px;
             }
             .print-button {
-              background: #3b82f6;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              background: #2563eb;
               color: white;
               border: none;
-              padding: 10px 20px;
-              border-radius: 6px;
+              padding: 8px 16px;
+              border-radius: 8px;
               font-size: 14px;
-              font-weight: 600;
+              font-weight: 500;
               cursor: pointer;
               margin-top: 10px;
               transition: background-color 0.2s;
             }
+            .print-button svg {
+              width: 16px;
+              height: 16px;
+            }
             .print-button:hover {
-              background: #2563eb;
+              background: #1d4ed8;
             }
             @media print {
               .print-button {
@@ -387,8 +401,15 @@ export default function LineupSheetPage() {
         </head>
         <body>
           <div class="printable-sheet">
-            <div class="text-center">
-              <button onclick="window.print()" class="print-button">프린트</button>
+            <div class="text-center mb-4">
+              <button onclick="window.print()" class="print-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect width="12" height="8" x="6" y="14"></rect>
+                </svg>
+                프린트
+              </button>
             </div>
             
             <div class="grid">
@@ -472,19 +493,21 @@ export default function LineupSheetPage() {
                         <th class="px-4 py-3 text-center">비고</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      ${players.map((player, index) => {
-                        const isInLineup = lineup.lineup_players?.some(lp => lp.player_id === player.id)
-                        return `
-                          <tr>
-                            <td class="px-4 py-3 text-center">${index + 1}</td>
-                            <td class="px-4 py-3 text-center">${player.name}</td>
-                            <td class="px-4 py-3 text-center">${player.number || ''}</td>
-                            <td class="px-4 py-3 text-center">${isInLineup ? 'V' : ''}</td>
-                          </tr>
-                        `
-                      }).join('')}
-                    </tbody>
+                                              <tbody>
+                            ${Array.from({ length: 27 }, (_, index) => {
+                              const playerNumber = index + 1
+                              const player = players.find(p => Number(p.number) === playerNumber)
+                              const isInLineup = player ? lineup.lineup_players?.some(lp => lp.player_id === player.id) : false
+                              return `
+                                <tr>
+                                  <td class="px-4 py-3 text-center">${playerNumber}</td>
+                                  <td class="px-4 py-3 text-center">${player?.name || ''}</td>
+                                  <td class="px-4 py-3 text-center">${player?.number || ''}</td>
+                                  <td class="px-4 py-3 text-center">${isInLineup ? 'V' : ''}</td>
+                                </tr>
+                              `
+                            }).join('')}
+                          </tbody>
                   </table>
                 </div>
               </div>
@@ -497,11 +520,6 @@ export default function LineupSheetPage() {
       printWindow.document.write(lineupSheetHTML)
       printWindow.document.close()
     }
-  }
-
-  const handleDownload = () => {
-    // PDF 다운로드 로직 (나중에 구현)
-    console.log('PDF 다운로드')
   }
 
   if (lineupLoading || gamesLoading || playersLoading) {
@@ -534,9 +552,9 @@ export default function LineupSheetPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 헤더 */}
-      <div className="bg-white shadow-sm border-b no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="space-y-6 p-6">
+        {/* 헤더 카드 */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
@@ -553,49 +571,46 @@ export default function LineupSheetPage() {
                 <span>{user?.role === '감독' ? '라인업 편집' : '경기 관리'}</span>
               </button>
               <div className="h-6 w-px bg-gray-300"></div>
-              <h1 className="text-xl font-semibold text-gray-900">
-                vs {selectedGame?.opponent_team?.name || '상대팀'} ({selectedGame?.game_date ? new Date(selectedGame.game_date).toLocaleString('ko-KR', { 
-                  year: 'numeric', 
-                  month: 'numeric', 
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }) : '경기일시'})
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  vs {selectedGame?.opponent_team?.name || '상대팀'}
               </h1>
+                <p className="text-gray-600">
+                  {selectedGame?.game_date ? new Date(selectedGame.game_date).toLocaleString('ko-KR', { 
+                    year: 'numeric', 
+                    month: 'numeric', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) : '경기일시'}
+                </p>
+              </div>
             </div>
             
             <div className="flex items-center space-x-3">
               <button
                 onClick={handlePrint}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                <Printer className="h-4 w-4" />
-                <span>프린트</span>
-              </button>
-              <button
-                onClick={handleDownload}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                <Download className="h-4 w-4" />
-                <span>PDF 다운로드</span>
+                <Printer className="h-4 w-4" />
+                <span>프린트보기</span>
               </button>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* 라인업 시트 */}
-      <div className="py-6">
+        {/* 라인업 시트 카드 */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <LineupSheet
           lineup={lineup}
           game={selectedGame}
           allPlayers={players}
           attendance={attendance}
-          teamName={ourTeam?.name || "우리팀"}
-          managerName={players?.find(p => p.role === '감독')?.name || "감독"}
+            teamName={ourTeam?.name || "우리팀"}
+            managerName={players?.find(p => p.role === '감독')?.name || "감독"}
         />
+        </div>
       </div>
-
     </div>
   )
 }

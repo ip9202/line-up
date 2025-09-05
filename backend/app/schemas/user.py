@@ -30,3 +30,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str

@@ -33,3 +33,9 @@ export const updateGame = async (id: number, game: GameUpdate): Promise<Game> =>
 export const deleteGame = async (id: number): Promise<void> => {
   await api.delete(`/games/${id}`)
 }
+
+// 경기의 라인업 개수 조회
+export const getGameLineupsCount = async (id: number): Promise<{ lineups_count: number }> => {
+  const response = await api.get(`/games/${id}/lineups/count`)
+  return response.data
+}
