@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useGames } from '../hooks/useGames'
 import { useLineups } from '../hooks/useLineups'
+import { useTeams } from '../hooks/useTeams'
 import LineupEditor from '../components/LineupEditor'
 import { useAuth } from '../contexts/AuthContext'
 import { Calendar, Users, Target, ArrowLeft, ClipboardList, FileText } from 'lucide-react'
@@ -14,9 +15,13 @@ export default function LineupEditorPage() {
   const navigate = useNavigate()
   const { data: games, isLoading: gamesLoading } = useGames()
   const { data: lineups, isLoading: lineupsLoading, refetch: refetchLineups } = useLineups()
+  const { data: teams } = useTeams()
   
   // 인증 상태
   const { user, isAuthenticated } = useAuth()
+  
+  // 우리팀 찾기
+  const ourTeam = teams?.find(team => team.is_our_team)
 
   // 새 라인업 생성 함수
   const handleCreateLineup = async () => {
@@ -203,7 +208,19 @@ export default function LineupEditorPage() {
                   라인업 편집
                 </h1>
                 <p className="mt-2 text-gray-600">
-                  {games?.find(g => g.id === selectedGameId)?.opponent_team?.name || '상대팀'} vs 우리팀
+                  {(() => {
+                    const selectedGame = games?.find(g => g.id === selectedGameId)
+                    if (!selectedGame) return '상대팀 vs 우리팀'
+                    
+                    const opponentTeam = selectedGame.opponent_team?.name || '상대팀'
+                    const ourTeamName = ourTeam?.name || '우리팀'
+                    
+                    if (selectedGame.is_home) {
+                      return `${opponentTeam} vs ${ourTeamName}`
+                    } else {
+                      return `${ourTeamName} vs ${opponentTeam}`
+                    }
+                  })()}
                 </p>
               </div>
             </div>

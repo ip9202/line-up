@@ -10,6 +10,7 @@ class Team(Base):
     city = Column(String(50), nullable=True)  # 도시명 (예: 서울, 부산)
     league = Column(String(50), nullable=True)  # 리그 (예: KBO, MLB)
     is_active = Column(Boolean, default=True)
+    is_our_team = Column(Boolean, default=False)  # 우리팀 여부
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

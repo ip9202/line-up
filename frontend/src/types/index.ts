@@ -8,6 +8,7 @@ export interface Team {
   city?: string
   league?: string
   is_active: boolean
+  is_our_team: boolean
   created_at: string
   updated_at?: string
 }
@@ -18,6 +19,7 @@ export interface TeamCreate {
   city?: string
   league?: string
   is_active?: boolean
+  is_our_team?: boolean
 }
 
 export interface TeamUpdate {
@@ -25,6 +27,7 @@ export interface TeamUpdate {
   city?: string
   league?: string
   is_active?: boolean
+  is_our_team?: boolean
 }
 
 // 경기장 타입
