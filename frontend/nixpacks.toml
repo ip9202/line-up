@@ -5,7 +5,18 @@ nixPkgs = ["nodejs-18_x"]
 cmds = ["npm ci"]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = [
+    "echo '=== Build Directory Structure ==='",
+    "pwd",
+    "ls -la",
+    "echo '=== src Directory ==='", 
+    "ls -la src/",
+    "echo '=== src/lib Directory ==='",
+    "ls -la src/lib/ || echo 'src/lib/ does not exist'",
+    "echo '=== Looking for api files ==='",
+    "find . -name '*api*' -type f",
+    "npm run build"
+]
 
 [start]
 cmd = "npm run preview -- --host 0.0.0.0 --port $PORT"
