@@ -1,4 +1,4 @@
-import api from '../lib/api'
+import api from '@/lib/api'
 
 // 출석 상태 조회
 export const getAttendance = async (lineupId: number): Promise<{ [playerId: number]: boolean }> => {
