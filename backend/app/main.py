@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
+import os
+import subprocess
 
 from app.utils.database import engine, Base
 from app.routers import players, games, lineups, pdf, excel, auth, teams, venues
@@ -11,6 +13,16 @@ from app.models import player, game, lineup, lineup_player, user, team, venue
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Run migrations if RUN_MIGRATIONS is set
+if os.getenv("RUN_MIGRATIONS") == "true":
+    try:
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+        print("Database migrations completed successfully")
+    except subprocess.CalledProcessError as e:
+        print(f"Migration failed: {e}")
+    except Exception as e:
+        print(f"Migration error: {e}")
 
 # Initialize FastAPI app
 app = FastAPI(
