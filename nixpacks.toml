@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["postgresql", "gcc", "pkg-config", "curl"]
+nixPkgs = ["python3", "python3Packages.pip", "postgresql", "gcc", "pkg-config", "curl"]
 
 [phases.install]
 cmds = [
