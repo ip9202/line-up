@@ -3,26 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { User, LoginRequest, LoginResponse } from '../types/auth'
-
-const API_BASE_URL = 'http://localhost:8002/api/v1'
-
-// 로그인 API 호출 함수
-const loginUser = async (credentials: LoginRequest): Promise<LoginResponse> => {
-  const params = new URLSearchParams()
-  params.append('username', credentials.username)
-  params.append('password', credentials.password)
-  
-  const response = await axios.post<LoginResponse>(`${API_BASE_URL}/auth/token`, params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  })
-  return response.data
-}
-
-// 로그아웃 함수
-const logoutUser = () => {
-  localStorage.removeItem('auth_token')
-  localStorage.removeItem('auth_user')
-}
+import { loginWithToken, logout as authLogout } from '../services/authService'
 
 interface AuthContextType {
   user: User | null
@@ -51,9 +32,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 로그인 뮤테이션
   const loginMutation = useMutation({
-    mutationFn: loginUser,
+    mutationFn: loginWithToken,
     onSuccess: (data: LoginResponse) => {
-      console.log('로그인 성공:', data)
       const { access_token, user: userData } = data
       
       // 토큰과 사용자 정보를 localStorage에 저장
@@ -67,8 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(userData)
       setToken(access_token)
       setIsAuthenticated(true)
-      
-      console.log('AuthContext 인증 상태 업데이트 완료:', { user: userData, isAuthenticated: true })
     },
     onError: (error) => {
       console.error('로그인 실패:', error)
@@ -77,7 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 로그아웃 함수
   const logout = useCallback(() => {
-    logoutUser()
+    authLogout()
     setUser(null)
     setToken(null)
     setIsAuthenticated(false)
@@ -116,10 +94,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false)
   }, [logout])
 
-  // 상태 변경 디버깅
-  useEffect(() => {
-    console.log('AuthContext 상태 변경:', { user, isAuthenticated, token })
-  }, [user, isAuthenticated, token])
 
   const value: AuthContextType = {
     user,

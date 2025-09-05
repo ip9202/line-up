@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+import logging
 
 from app.utils.database import get_db
 from app.models.player import Player
 from app.schemas.player import PlayerCreate, PlayerUpdate, PlayerResponse
 from app.dependencies.auth import get_current_active_user, require_manager_role
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -52,7 +55,7 @@ async def create_player(
         return db_player
     except Exception as e:
         db.rollback()
-        print(f"선수 생성 에러: {e}")
+        logger.error(f"선수 생성 에러: {e}")
         raise HTTPException(status_code=400, detail=f"선수 생성 실패: {str(e)}")
 
 @router.put("/{player_id}", response_model=PlayerResponse)
@@ -69,7 +72,7 @@ async def update_player(
             raise HTTPException(status_code=404, detail="Player not found")
         
         update_data = player.model_dump(exclude_unset=True)
-        print(f"업데이트 데이터: {update_data}")
+        logger.info(f"선수 업데이트 데이터: {update_data}")
         
         for key, value in update_data.items():
             setattr(db_player, key, value)
@@ -79,7 +82,7 @@ async def update_player(
         return db_player
     except Exception as e:
         db.rollback()
-        print(f"선수 수정 에러: {e}")
+        logger.error(f"선수 수정 에러: {e}")
         raise HTTPException(status_code=400, detail=f"선수 수정 실패: {str(e)}")
 
 @router.delete("/{player_id}")
@@ -88,7 +91,7 @@ async def delete_player(
     db: Session = Depends(get_db)
 ):
     """선수 삭제"""
-    print(f"선수 삭제 요청 - 선수 ID: {player_id}")
+    logger.info(f"선수 삭제 요청 - 선수 ID: {player_id}")
     player = db.query(Player).filter(Player.id == player_id).first()
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")

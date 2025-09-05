@@ -1,5 +1,15 @@
-// 선수 역할 타입
+// 선수 역할 타입 (백엔드와 일치)
 export type PlayerRole = '선수' | '감독' | '코치' | '총무' | '회장' | '고문'
+
+// 역할 우선순위 (라인업에서 표시 순서)
+export const ROLE_PRIORITY: Record<PlayerRole, number> = {
+  '감독': 1,
+  '코치': 2,
+  '회장': 3,
+  '고문': 4,
+  '총무': 5,
+  '선수': 6,
+}
 
 // 팀 타입
 export interface Team {
