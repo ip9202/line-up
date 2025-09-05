@@ -34,9 +34,20 @@ app = FastAPI(
 )
 
 # CORS middleware
+allowed_origins = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000", 
+    "http://localhost:3001", 
+    "http://127.0.0.1:3001"
+]
+
+# Add Railway domains if available
+if os.getenv("ALLOWED_ORIGINS"):
+    allowed_origins.extend(os.getenv("ALLOWED_ORIGINS").split(","))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,6 +70,10 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "line-up-api"}
+
+@app.get("/api/v1/health")
+async def health_check_v1():
+    return {"status": "healthy", "service": "line-up-api", "version": "1.0.0"}
 
 if __name__ == "__main__":
     import os

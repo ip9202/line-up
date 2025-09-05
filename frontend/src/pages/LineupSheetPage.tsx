@@ -5,7 +5,7 @@ import { useGames } from '../hooks/useGames'
 import { usePlayers } from '../hooks/usePlayers'
 import { useTeams } from '../hooks/useTeams'
 import { useAuth } from '../contexts/AuthContext'
-import api from '@/lib/api'
+import api from '../lib/api'
 import LineupSheet from '../components/LineupSheet'
 import { ArrowLeft, Printer } from 'lucide-react'
 
