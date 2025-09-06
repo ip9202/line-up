@@ -72,22 +72,26 @@ axios.defaults.timeout = 10000
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
-    // 모든 URL을 강제로 HTTPS로 변환
-    if (config.url) {
-      config.url = config.url.replace('http://', 'https://')
-    }
-    
-    if (config.baseURL) {
-      config.baseURL = config.baseURL.replace('http://', 'https://')
-    }
-    
-    // 최종 URL 재구성
-    const finalUrl = `${config.baseURL}${config.url}`
-    if (finalUrl.includes('http://')) {
-      const httpsUrl = finalUrl.replace('http://', 'https://')
-      console.log('최종 URL 강제 HTTPS 변환:', finalUrl, '->', httpsUrl)
-      // URL을 직접 설정
-      config.url = httpsUrl.replace(config.baseURL || '', '')
+    // 프로덕션에서만 HTTPS 강제 변환
+    if (import.meta.env.PROD) {
+      if (config.url) {
+        config.url = config.url.replace('http://', 'https://')
+      }
+      
+      if (config.baseURL) {
+        config.baseURL = config.baseURL.replace('http://', 'https://')
+      }
+      
+      // 최종 URL 재구성
+      const finalUrl = `${config.baseURL}${config.url}`
+      if (finalUrl.includes('http://')) {
+        const httpsUrl = finalUrl.replace('http://', 'https://')
+        console.log('최종 URL 강제 HTTPS 변환:', finalUrl, '->', httpsUrl)
+        // URL을 직접 설정
+        config.url = httpsUrl.replace(config.baseURL || '', '')
+      }
+    } else {
+      console.log('개발서버 - HTTP URL 유지:', `${config.baseURL}${config.url}`)
     }
     
     // 모든 환경에서 요청 정보 로그 출력
