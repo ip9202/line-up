@@ -24,11 +24,11 @@ export default function Players() {
   // 인증 상태
   const { user, isAuthenticated } = useAuth()
 
-  // API 호출
+  // API 호출 - 검색어가 있을 때는 전체 데이터, 없을 때는 페이징된 데이터
   const { data: players, isLoading, error } = usePlayers({
     role: selectedRole || undefined,
-    skip: (currentPage - 1) * itemsPerPage,
-    limit: itemsPerPage
+    skip: searchTerm ? 0 : (currentPage - 1) * itemsPerPage,
+    limit: searchTerm ? 1000 : itemsPerPage  // 검색 시에는 전체 데이터 가져오기
   })
   const { data: totalCount, isLoading: countLoading } = usePlayersCount({
     role: selectedRole || undefined
@@ -244,7 +244,10 @@ export default function Players() {
                 type="text"
                 placeholder="선수 이름으로 검색..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1) // 검색 시 첫 페이지로 이동
+                }}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               />
             </div>
@@ -477,8 +480,8 @@ export default function Players() {
             ))}
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
+          {/* Pagination - 검색 중일 때는 표시하지 않음 */}
+          {totalPages > 1 && !searchTerm && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 {/* 페이지당 항목 수 선택 */}
