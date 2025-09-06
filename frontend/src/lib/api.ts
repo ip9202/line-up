@@ -52,9 +52,12 @@ export const api = axios.create({
   protocol: 'https:',
   // 요청 타임아웃 설정
   timeout: 10000,
-  // 요청 URL 강제 HTTPS 변환
+  // JSON 직렬화 처리
   transformRequest: [(data, headers) => {
     console.log('transformRequest 실행:', { data, headers })
+    if (data && typeof data === 'object') {
+      return JSON.stringify(data)
+    }
     return data
   }]
 })

@@ -30,7 +30,12 @@ export const teamService = {
 
   // 팀 생성
   createTeam: async (team: TeamCreate): Promise<Team> => {
-    const response = await api.post(API_BASE_URL, team)
+    console.log('팀 생성 요청 데이터:', team)
+    const response = await api.post(API_BASE_URL, team, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
     return response.data
   },
 
