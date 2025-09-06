@@ -13,7 +13,8 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
-    https: true, // HTTPS 활성화
+    // 개발환경에서는 HTTP 사용 (Mixed Content 방지)
+    https: false,
     watch: {
       usePolling: true
     }
