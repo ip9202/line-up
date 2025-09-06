@@ -49,7 +49,12 @@ async def create_player(
 ):
     """선수 등록"""
     try:
-        db_player = Player(**player.model_dump())
+        player_data = player.model_dump()
+        # phone이 None인 경우 빈 문자열로 변환
+        if player_data.get('phone') is None:
+            player_data['phone'] = ''
+        
+        db_player = Player(**player_data)
         db.add(db_player)
         db.commit()
         db.refresh(db_player)
@@ -73,6 +78,10 @@ async def update_player(
             raise HTTPException(status_code=404, detail="Player not found")
         
         update_data = player.model_dump(exclude_unset=True)
+        # phone이 None인 경우 빈 문자열로 변환
+        if 'phone' in update_data and update_data['phone'] is None:
+            update_data['phone'] = ''
+        
         logger.info(f"선수 업데이트 데이터: {update_data}")
         
         for key, value in update_data.items():
