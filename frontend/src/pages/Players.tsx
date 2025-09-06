@@ -26,12 +26,6 @@ export default function Players() {
   })
   const { data: teams, isLoading: teamsLoading, error: teamsError } = useTeams()
   
-  // 디버깅용 로그
-  console.log('팀 데이터:', { teams, teamsLoading, teamsError })
-  console.log('선수 데이터:', { players })
-  if (players && players.length > 0) {
-    console.log('첫 번째 선수:', players[0])
-  }
   const deletePlayerMutation = useDeletePlayer()
 
   // 권한 체크 함수들
@@ -51,7 +45,6 @@ export default function Players() {
   const getTeamName = (teamId?: number) => {
     if (!teamId || !teams) return ''
     const team = teams.find(t => t.id === teamId)
-    console.log('팀 찾기:', { teamId, teams, team })
     return team?.name || ''
   }
 
