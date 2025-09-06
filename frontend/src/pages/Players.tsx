@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Plus, Search, Filter, Users, Edit, Trash2, Eye, X, ChevronUp, ChevronDown } from 'lucide-react'
 import { usePlayers, useDeletePlayer } from '../hooks/usePlayers'
+import { useTeams } from '../hooks/useTeams'
 import { Player, PlayerRole } from '../types'
 import PlayerForm from '../components/PlayerForm'
 import { useAuth } from '../contexts/AuthContext'
@@ -23,6 +24,7 @@ export default function Players() {
   const { data: players, isLoading, error } = usePlayers({
     role: selectedRole || undefined
   })
+  const { data: teams } = useTeams()
   const deletePlayerMutation = useDeletePlayer()
 
   // 권한 체크 함수들
@@ -36,6 +38,13 @@ export default function Players() {
 
   const canDeletePlayer = () => {
     return isAuthenticated && user?.role === '총무'
+  }
+
+  // 팀 이름 가져오기 헬퍼 함수
+  const getTeamName = (teamId?: number) => {
+    if (!teamId || !teams) return ''
+    const team = teams.find(t => t.id === teamId)
+    return team?.name || ''
   }
 
   // 정렬 함수
@@ -254,7 +263,6 @@ export default function Players() {
                     <SortableHeader field="name">이름</SortableHeader>
                     <SortableHeader field="role">역할</SortableHeader>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">선호포지션</th>
-                    <SortableHeader field="is_professional">선수출신</SortableHeader>
                     <SortableHeader field="is_active">상태</SortableHeader>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">작업</th>
                   </tr>
@@ -272,7 +280,14 @@ export default function Players() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div>
-                            <div className="text-sm font-semibold text-gray-900">{player.name}</div>
+                            <div className="text-sm font-semibold text-gray-900">
+                              {player.name}
+                              {player.team_id && (
+                                <span className="ml-2 text-xs text-gray-500">
+                                  ({getTeamName(player.team_id)})
+                                </span>
+                              )}
+                            </div>
                             {player.phone && (
                               <div className="text-sm text-gray-500">
                                 {player.phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')}
@@ -302,15 +317,6 @@ export default function Players() {
                         ) : (
                           <span className="text-sm text-gray-500">-</span>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                          player.is_professional 
-                            ? 'bg-orange-100 text-orange-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {player.is_professional ? '선수출신' : '비선수출신'}
-                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
@@ -368,7 +374,14 @@ export default function Players() {
                       {player.number || '?'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-lg font-semibold text-gray-900 truncate">{player.name}</div>
+                      <div className="text-lg font-semibold text-gray-900 truncate">
+                        {player.name}
+                        {player.team_id && (
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({getTeamName(player.team_id)})
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                           player.role === '선수' ? 'bg-blue-100 text-blue-800' :
