@@ -40,7 +40,8 @@ allowed_origins = [
     "http://localhost:3001", 
     "http://127.0.0.1:3001",
     "https://line-up-frontend-production.up.railway.app",
-    "https://web-production-20d69.up.railway.app"
+    "https://web-production-20d69.up.railway.app",
+    "https://line-up-backend-production.up.railway.app"
 ]
 
 # Add Railway domains if available
