@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 // API 기본 설정
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://line-up-backend-production.up.railway.app/api/v1'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.DEV ? 'http://localhost:8002/api/v1' : 'https://line-up-backend-production.up.railway.app/api/v1')
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
