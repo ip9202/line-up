@@ -489,7 +489,6 @@ export default function LineupSheetPage() {
                         ?.filter(lp => lp.batting_order > 0)
                         .sort((a, b) => a.batting_order - b.batting_order)
                         .map(lp => {
-                          const player = players.find(p => p.id === lp.player_id)
                           const positionMap = {
                             'P': '투수', 'C': '포수', '1B': '1루수', '2B': '2루수', '3B': '3루수',
                             'SS': '유격수', 'LF': '좌익수', 'CF': '중견수', 'RF': '우익수', 'DH': '지명타자'
@@ -498,19 +497,22 @@ export default function LineupSheetPage() {
                             <tr>
                               <td class="px-4 py-3 text-center font-medium">${lp.batting_order}</td>
                               <td class="px-4 py-3 text-center">${positionMap[lp.position] || lp.position}</td>
-                              <td class="px-4 py-3 text-center">${player?.name || ''}</td>
-                              <td class="px-4 py-3 text-center">${player?.number || ''}</td>
+                              <td class="px-4 py-3 text-center">${lp.player?.name || ''}</td>
+                              <td class="px-4 py-3 text-center">${lp.player?.number !== undefined && lp.player?.number !== null ? lp.player.number : ''}</td>
                             </tr>
                           `
                         }).join('') || ''}
-                      ${lineup.lineup_players?.find(lp => lp.batting_order === 0) ? `
-                        <tr class="border-t">
-                          <td class="px-4 py-3 text-center font-medium">투수</td>
-                          <td class="px-4 py-3 text-center">선발</td>
-                          <td class="px-4 py-3 text-center">${players.find(p => p.id === lineup.lineup_players.find(lp => lp.batting_order === 0)?.player_id)?.name || ''}</td>
-                          <td class="px-4 py-3 text-center">${players.find(p => p.id === lineup.lineup_players.find(lp => lp.batting_order === 0)?.player_id)?.number || ''}</td>
-                        </tr>
-                      ` : ''}
+                      ${(() => {
+                        const pitcher = lineup.lineup_players?.find(lp => lp.batting_order === 0)
+                        return pitcher ? `
+                          <tr class="border-t">
+                            <td class="px-4 py-3 text-center font-medium">투수</td>
+                            <td class="px-4 py-3 text-center">선발</td>
+                            <td class="px-4 py-3 text-center">${pitcher.player?.name || ''}</td>
+                            <td class="px-4 py-3 text-center">${pitcher.player?.number !== undefined && pitcher.player?.number !== null ? pitcher.player.number : ''}</td>
+                          </tr>
+                        ` : ''
+                      })()}
                     </tbody>
                   </table>
                 </div>
@@ -536,7 +538,7 @@ export default function LineupSheetPage() {
                                 <tr>
                                   <td class="px-4 py-3 text-center">${index + 1}</td>
                                   <td class="px-4 py-3 text-center">${player?.name || ''}</td>
-                                  <td class="px-4 py-3 text-center">${player?.number || ''}</td>
+                                  <td class="px-4 py-3 text-center">${player?.number !== undefined && player?.number !== null ? player.number : ''}</td>
                                   <td class="px-4 py-3 text-center">${player ? (isPresent ? 'V' : '-') : ''}</td>
                                 </tr>
                               `

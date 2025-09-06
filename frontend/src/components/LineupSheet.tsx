@@ -230,7 +230,7 @@ export default function LineupSheet({
                       {lineupPlayer.player?.name || '선수 없음'}
                     </td>
                     <td className="px-4 py-3 text-center text-gray-900">
-                      {lineupPlayer.player?.number || '-'}
+                      {lineupPlayer.player?.number !== undefined && lineupPlayer.player?.number !== null ? lineupPlayer.player.number : '-'}
                     </td>
                   </tr>
                 ))}
@@ -247,7 +247,7 @@ export default function LineupSheet({
                       {pitcher.player?.name || '선수 없음'}
                     </td>
                     <td className="px-4 py-3 text-center text-gray-900">
-                      {pitcher.player?.number || '-'}
+                      {pitcher.player?.number !== undefined && pitcher.player?.number !== null ? pitcher.player.number : '-'}
                     </td>
                   </tr>
                 )}
@@ -284,7 +284,7 @@ export default function LineupSheet({
                         {player?.name || ''}
                       </td>
                       <td className="px-4 py-3 text-center text-gray-900 border-r border-gray-300">
-                        {player?.number || ''}
+                        {player?.number !== undefined && player?.number !== null ? player.number : ''}
                       </td>
                       <td className="px-4 py-3 text-center text-gray-900">
                         {player ? (isPresent ? 'V' : '-') : ''}
