@@ -12,6 +12,8 @@ export const usePlayers = (params?: {
   return useQuery({
     queryKey: ['players', params],
     queryFn: () => getPlayers(params),
+    staleTime: 0, // 항상 최신 데이터 가져오기
+    refetchOnWindowFocus: true, // 창 포커스 시 자동 새로고침
   })
 }
 
