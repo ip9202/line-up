@@ -50,9 +50,9 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
       lineup.lineup_players.forEach(lp => {
         const player = players?.find(p => p.id === lp.player_id)
         if (player) {
-          // 투수는 별도로 10번으로 처리 (batting_order가 0인 경우만)
+          // 투수는 0번으로 처리
           if (lp.position === 'P' && lp.batting_order === 0) {
-            initialData[10] = {
+            initialData[0] = {
               player,
               position: 'P'
             }
@@ -125,7 +125,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
   const handlePlayerDrop = async (battingOrder: number, player: Player) => {
     try {
       // 투수인 경우 특별 처리
-      const isPitcher = battingOrder === 10
+      const isPitcher = battingOrder === 0
       let position, actualBattingOrder
 
       if (isPitcher) {
@@ -215,7 +215,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
   const handlePlayerRemove = async (battingOrder: number) => {
     try {
       const lineupPlayer = lineup?.lineup_players.find(
-        lp => (battingOrder === 10 && lp.position === 'P') || lp.batting_order === battingOrder
+        lp => (battingOrder === 0 && lp.position === 'P') || lp.batting_order === battingOrder
       )
       if (lineupPlayer) {
         await removePlayerMutation.mutateAsync({
@@ -238,7 +238,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
   const handlePositionChange = async (battingOrder: number, newPosition: string) => {
     try {
       const lineupPlayer = lineup?.lineup_players.find(
-        lp => (battingOrder === 10 && lp.position === 'P') || lp.batting_order === battingOrder
+        lp => (battingOrder === 0 && lp.position === 'P') || lp.batting_order === battingOrder
       )
       
       if (lineupPlayer) {
@@ -368,10 +368,10 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
               ))}
               {/* 투수 행 추가 */}
               <LineupCard
-                key={10}
-                battingOrder={10}
-                player={lineupData[10]?.player}
-                position={lineupData[10]?.position}
+                key={0}
+                battingOrder={0}
+                player={lineupData[0]?.player}
+                position={lineupData[0]?.position}
                 onDrop={handlePlayerDrop}
                 onRemove={handlePlayerRemove}
                 onPositionChange={handlePositionChange}
