@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Save, User } from 'lucide-react'
 import { useCreatePlayer, useUpdatePlayer } from '../hooks/usePlayers'
+import { useTeams } from '../hooks/useTeams'
 import { Player, PlayerCreate, PlayerUpdate, PlayerRole } from '../types'
 
 interface PlayerFormProps {
@@ -14,6 +15,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
     number: undefined,
     phone: '',
     email: '',
+    team_id: undefined,
     role: '선수',
     age: undefined,
     birth_date: '',
@@ -33,6 +35,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
 
   const createPlayerMutation = useCreatePlayer()
   const updatePlayerMutation = useUpdatePlayer()
+  const { data: teams, isLoading: teamsLoading } = useTeams()
 
   // 편집 모드일 때 기존 데이터로 폼 초기화
   useEffect(() => {
@@ -42,6 +45,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
         number: player.number || undefined,
         phone: player.phone || '',
         email: player.email || '',
+        team_id: player.team_id || undefined,
         role: player.role,
         age: player.age || undefined,
         birth_date: player.birth_date || '',
@@ -258,6 +262,27 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
                 <option value="회장">회장</option>
                 <option value="고문">고문</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">소속 팀</label>
+              <select
+                name="team_id"
+                value={formData.team_id || ''}
+                onChange={handleChange}
+                className="form-select"
+                disabled={teamsLoading}
+              >
+                <option value="">팀을 선택하세요</option>
+                {teams?.map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                ))}
+              </select>
+              {teamsLoading && (
+                <p className="text-sm text-gray-500 mt-1">팀 목록을 불러오는 중...</p>
+              )}
             </div>
 
             <div>

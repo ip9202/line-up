@@ -82,6 +82,7 @@ export interface Player {
   phone: string
   email?: string
   photo_url?: string
+  team_id?: number
   role: PlayerRole
   age?: number
   birth_date?: string
@@ -105,6 +106,7 @@ export interface PlayerCreate {
   phone: string
   email?: string
   photo_url?: string
+  team_id?: number
   role?: PlayerRole
   age?: number
   birth_date?: string
@@ -125,6 +127,7 @@ export interface PlayerUpdate {
   phone?: string
   email?: string
   photo_url?: string
+  team_id?: number
   role?: PlayerRole
   age?: number
   birth_date?: string
