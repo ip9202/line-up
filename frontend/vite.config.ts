@@ -13,12 +13,9 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
+    https: true, // HTTPS 활성화
     watch: {
       usePolling: true
-    },
-    // 개발서버에서는 Mixed Content 정책 비활성화
-    headers: {
-      'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src 'self' http://localhost:* ws://localhost:*;"
     }
   },
   preview: {
