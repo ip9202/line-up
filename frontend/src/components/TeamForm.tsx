@@ -76,7 +76,22 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
     } catch (error) {
       console.error('팀 저장 실패:', error)
       console.error('오류 상세:', error.response?.data)
-      alert(`팀 저장에 실패했습니다: ${error.response?.data?.detail || error.message}`)
+      
+      // Pydantic 유효성 검사 오류 상세 표시
+      let errorMessage = '팀 저장에 실패했습니다.'
+      if (error.response?.data?.detail) {
+        if (Array.isArray(error.response.data.detail)) {
+          errorMessage = error.response.data.detail.map((err: any) => 
+            `${err.loc?.join('.')}: ${err.msg}`
+          ).join('\n')
+        } else {
+          errorMessage = error.response.data.detail
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      alert(errorMessage)
     }
   }
 
