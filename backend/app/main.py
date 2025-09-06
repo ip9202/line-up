@@ -48,17 +48,30 @@ allowed_origins = [
 if os.getenv("ALLOWED_ORIGINS"):
     allowed_origins.extend(os.getenv("ALLOWED_ORIGINS").split(","))
 
-# HTTPS 강제 미들웨어 (프로덕션 환경에서만)
+# HTTPS 강제 미들웨어
 @app.middleware("http")
 async def force_https_redirect(request: Request, call_next):
-    # 프로덕션 환경에서만 HTTPS 강제
-    if os.getenv("ENVIRONMENT") == "production" or os.getenv("RAILWAY_ENVIRONMENT"):
+    # HTTPS 강제 설정 확인
+    force_https = os.getenv("FORCE_HTTPS", "false").lower() == "true"
+    force_redirect = os.getenv("FORCE_HTTPS_REDIRECT", "false").lower() == "true"
+    
+    if force_https:
         # X-Forwarded-Proto 헤더 확인 (Railway에서 제공)
         forwarded_proto = request.headers.get("X-Forwarded-Proto")
-        if forwarded_proto == "http":
-            # HTTP 요청을 HTTPS로 리다이렉트
+        
+        # HTTP 요청을 HTTPS로 리다이렉트
+        if forwarded_proto == "http" and force_redirect:
             https_url = str(request.url).replace("http://", "https://", 1)
+            print(f"HTTPS 리다이렉트: {request.url} -> {https_url}")
             return RedirectResponse(url=https_url, status_code=301)
+        
+        # HTTPS 강제 설정이지만 리다이렉트가 비활성화된 경우
+        if forwarded_proto == "http" and not force_redirect:
+            print(f"HTTPS 강제: HTTP 요청 거부 - {request.url}")
+            return JSONResponse(
+                status_code=400,
+                content={"error": "HTTPS required", "message": "This service requires HTTPS"}
+            )
     
     response = await call_next(request)
     return response
