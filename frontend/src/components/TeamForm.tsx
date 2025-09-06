@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import { useCreateTeam, useUpdateTeam } from '../hooks/useTeams'
+import { useCreateTeam, useUpdateTeam, useTeams } from '../hooks/useTeams'
 import { Team, TeamCreate, TeamUpdate } from '../types'
 
 interface TeamFormProps {
@@ -14,11 +14,13 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
     name: '',
     city: '',
     league: '',
-    is_active: true
+    is_active: true,
+    is_our_team: false
   })
 
   const createTeamMutation = useCreateTeam()
   const updateTeamMutation = useUpdateTeam()
+  const { data: teams } = useTeams()
 
   // 폼 데이터 초기화
   useEffect(() => {
@@ -27,14 +29,16 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
         name: team.name,
         city: team.city || '',
         league: team.league || '',
-        is_active: team.is_active
+        is_active: team.is_active,
+        is_our_team: team.is_our_team
       })
     } else {
       setFormData({
         name: '',
         city: '',
         league: '',
-        is_active: true
+        is_active: true,
+        is_our_team: false
       })
     }
   }, [team, isEditMode])
@@ -45,6 +49,18 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
       alert('팀명을 입력해주세요.')
       return false
     }
+    
+    // 우리팀 설정 시 기존 우리팀 확인
+    if (formData.is_our_team) {
+      const existingOurTeam = teams?.find(t => t.is_our_team && t.id !== team?.id)
+      if (existingOurTeam) {
+        const confirmMessage = `이미 "${existingOurTeam.name}"이 우리팀으로 설정되어 있습니다.\n새로운 팀을 우리팀으로 설정하면 기존 우리팀 설정이 해제됩니다.\n계속하시겠습니까?`
+        if (!confirm(confirmMessage)) {
+          return false
+        }
+      }
+    }
+    
     return true
   }
 
@@ -60,7 +76,8 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
           name: formData.name,
           city: formData.city || undefined,
           league: formData.league || undefined,
-          is_active: formData.is_active
+          is_active: formData.is_active,
+          is_our_team: formData.is_our_team
         }
         await updateTeamMutation.mutateAsync({ id: team.id, team: updateData })
       } else {
@@ -68,7 +85,8 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
           name: formData.name,
           city: formData.city || undefined,
           league: formData.league || undefined,
-          is_active: formData.is_active
+          is_active: formData.is_active,
+          is_our_team: formData.is_our_team
         }
         await createTeamMutation.mutateAsync(createData)
       }
@@ -183,6 +201,21 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
             />
             <label htmlFor="is_active" className="ml-2 block text-sm text-gray-700">
               활성 상태
+            </label>
+          </div>
+
+          {/* 우리팀 설정 */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="is_our_team"
+              name="is_our_team"
+              checked={formData.is_our_team}
+              onChange={handleChange}
+              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+            />
+            <label htmlFor="is_our_team" className="ml-2 block text-sm text-gray-700">
+              우리팀으로 설정 <span className="text-green-600 font-medium">(1팀만 가능)</span>
             </label>
           </div>
 
