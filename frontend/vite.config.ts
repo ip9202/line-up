@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+r import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
@@ -20,10 +20,21 @@ export default defineConfig({
   preview: {
     host: true,
     port: parseInt(process.env.PORT || '3000'),
-    allowedHosts: ['healthcheck.railway.app', 'line-up-frontend-production.up.railway.app', 'web-production-20d69.up.railway.app']
+    allowedHosts: ['healthcheck.railway.app', 'line-up-frontend-production.up.railway.app']
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    // HTTPS 강제 설정
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
+  // 환경 변수 정의
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   }
 })
