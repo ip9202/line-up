@@ -118,9 +118,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
       newErrors.email = '올바른 이메일 형식이 아닙니다.'
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = '전화번호는 필수입니다.'
-    } else if (!/^010-\d{4}-\d{4}$/.test(formData.phone)) {
+    if (formData.phone && !/^010-\d{4}-\d{4}$/.test(formData.phone)) {
       newErrors.phone = '010-XXXX-XXXX 형식으로 입력해주세요.'
     }
 
@@ -323,7 +321,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                전화번호 <span className="text-red-500">*</span>
+                전화번호
               </label>
               <input
                 type="tel"

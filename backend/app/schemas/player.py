@@ -6,7 +6,7 @@ from app.enums.player_role import PlayerRole
 class PlayerBase(BaseModel):
     name: str
     number: Optional[int] = None
-    phone: str
+    phone: Optional[str] = None
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
     team_id: Optional[int] = None
