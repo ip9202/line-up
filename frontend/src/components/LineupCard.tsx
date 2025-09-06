@@ -56,7 +56,7 @@ export default function LineupCard({
     { value: 'RF', label: 'RF' },
     { value: 'DH', label: 'DH' },
     { value: 'C', label: 'C' },
-    { value: 'P', label: '선발' }
+    { value: 'P', label: 'P' }
   ]
 
   // 사용 가능한 포지션 필터링 (현재 포지션은 제외)

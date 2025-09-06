@@ -103,7 +103,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
   // 포지션 옵션
   const positionOptions = [
     { value: '', label: '전체' },
-    { value: 'P', label: '선발' },
+    { value: 'P', label: 'P' },
     { value: 'C', label: '포수' },
     { value: '1B', label: '1루수' },
     { value: '2B', label: '2루수' },
