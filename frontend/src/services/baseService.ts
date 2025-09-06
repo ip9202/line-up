@@ -24,7 +24,8 @@ export class BaseApiService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
 
   // 상세 조회
   async getById(id: number): Promise<T> {
-    const response = await api.get(`${this.endpoint}/${id}`)
+    const url = `${this.endpoint}${this.endpoint.endsWith('/') ? '' : '/'}${id}`
+    const response = await api.get(url)
     return response.data
   }
 
@@ -36,13 +37,15 @@ export class BaseApiService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
 
   // 수정
   async update(id: number, data: TUpdate): Promise<T> {
-    const response = await api.put(`${this.endpoint}/${id}`, data)
+    const url = `${this.endpoint}${this.endpoint.endsWith('/') ? '' : '/'}${id}`
+    const response = await api.put(url, data)
     return response.data
   }
 
   // 삭제
   async delete(id: number): Promise<void> {
-    await api.delete(`${this.endpoint}/${id}`)
+    const url = `${this.endpoint}${this.endpoint.endsWith('/') ? '' : '/'}${id}`
+    await api.delete(url)
   }
 }
 
