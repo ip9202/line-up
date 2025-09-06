@@ -139,8 +139,22 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
       newErrors.team_id = '소속팀을 선택해주세요.'
     }
 
+    // 등번호 검증
+    if (formData.number !== undefined && formData.number !== null && formData.number !== '') {
+      // 숫자만 허용 (0, 00, 1, 10 등)
+      if (!/^[0-9]+$/.test(formData.number)) {
+        newErrors.number = '등번호는 숫자만 입력 가능합니다.'
+      } else {
+        // 0-99 범위 검증
+        const numValue = parseInt(formData.number, 10)
+        if (numValue < 0 || numValue > 99) {
+          newErrors.number = '등번호는 0-99 사이여야 합니다.'
+        }
+      }
+    }
+
     // 등번호 중복 검증 (전체 선수 중에서, 생성 모드에서만)
-    if (!player && formData.number) {
+    if (!player && formData.number !== undefined && formData.number !== null && formData.number !== '' && !newErrors.number) {
       const existingPlayer = players?.find(p => p.number === formData.number)
       if (existingPlayer) {
         newErrors.number = `등번호 ${formData.number}번은 이미 사용 중입니다.`
@@ -256,14 +270,14 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">등번호</label>
               <input
-                type="number"
+                type="text"
                 name="number"
                 value={formData.number || ''}
                 onChange={handleChange}
                 className={`form-input ${errors.number ? 'border-red-500' : ''}`}
-                placeholder="등번호"
-                min="1"
-                max="99"
+                placeholder="등번호 (예: 0, 00, 1, 10)"
+                pattern="[0-9]+"
+                maxLength="2"
               />
               {errors.number && <p className="text-red-500 text-sm mt-1">{errors.number}</p>}
             </div>
