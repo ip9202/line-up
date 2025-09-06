@@ -29,11 +29,35 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // HTTPS 강제 설정
+  httpsAgent: {
+    rejectUnauthorized: false // 개발 환경에서만 사용
+  },
+  // 요청 URL 강제 HTTPS 변환
+  transformRequest: [(data, headers) => {
+    // 요청 URL이 HTTP로 시작하면 HTTPS로 변경
+    if (headers && headers.url && headers.url.startsWith('http://')) {
+      headers.url = headers.url.replace('http://', 'https://')
+    }
+    return data
+  }]
 })
 
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
+    // URL 강제 HTTPS 변환
+    if (config.url && config.url.startsWith('http://')) {
+      config.url = config.url.replace('http://', 'https://')
+      console.log('URL 강제 HTTPS 변환:', config.url)
+    }
+    
+    // baseURL 강제 HTTPS 변환
+    if (config.baseURL && config.baseURL.startsWith('http://')) {
+      config.baseURL = config.baseURL.replace('http://', 'https://')
+      console.log('baseURL 강제 HTTPS 변환:', config.baseURL)
+    }
+    
     // 모든 환경에서 요청 정보 로그 출력
     console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
     console.log('Full URL:', `${config.baseURL}${config.url}`)
