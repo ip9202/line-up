@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { usePlayers, useLineup, useAddPlayerToLineup, useRemovePlayerFromLineup } from '../hooks/useLineups'
 import { usePlayers as usePlayersList } from '../hooks/usePlayers'
+import { useTeams } from '../hooks/useTeams'
 import { Player } from '../types'
 import LineupCard from './LineupCard'
 import PlayerCard from './PlayerCard'
@@ -24,6 +25,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
 
   const { data: lineup, isLoading: lineupLoading } = useLineup(lineupId)
   const { data: players, isLoading: playersLoading } = usePlayersList()
+  const { data: teams } = useTeams()
   const addPlayerMutation = useAddPlayerToLineup()
   const removePlayerMutation = useRemovePlayerFromLineup()
   
@@ -33,6 +35,11 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
   // 권한 체크 함수
   const canManageLineups = () => {
     return isAuthenticated && user?.role === '감독'
+  }
+
+  // 우리팀 ID 찾기
+  const getOurTeamId = () => {
+    return teams?.find(team => team.is_our_team)?.id
   }
 
   // 라인업 데이터 초기화
@@ -79,15 +86,17 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
     return 'none'
   }
 
-  // 필터링된 선수 목록 (모든 선수 표시 - 교체 가능)
+  // 필터링된 선수 목록 (우리팀 선수만 표시)
   const filteredPlayers = players?.filter(player => {
+    const ourTeamId = getOurTeamId()
+    const isOurTeamPlayer = ourTeamId ? player.team_id === ourTeamId : false
     const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPosition = !selectedPosition || player.position_preference === selectedPosition
     const matchesAttendance = attendanceFilter === 'all' || 
       (attendanceFilter === 'present' && attendance[player.id]) ||
       (attendanceFilter === 'absent' && !attendance[player.id])
     
-    return matchesSearch && matchesPosition && matchesAttendance
+    return isOurTeamPlayer && matchesSearch && matchesPosition && matchesAttendance
   }) || []
 
   // 포지션 옵션
