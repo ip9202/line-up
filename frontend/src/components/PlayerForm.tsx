@@ -330,7 +330,6 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
                 onChange={handleChange}
                 className={`form-input ${errors.phone ? 'border-red-500' : ''}`}
                 placeholder="010-1234-5678"
-                required
               />
               {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
             </div>
