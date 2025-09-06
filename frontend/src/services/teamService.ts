@@ -20,7 +20,7 @@ class TeamApiService extends BaseApiService<Team, TeamCreate, TeamUpdate> {
 }
 
 // 서비스 인스턴스 생성
-const teamService = new TeamApiService()
+export const teamService = new TeamApiService()
 
 // 기존 함수형 인터페이스 유지 (하위 호환성)
 export const getTeams = (params?: {
