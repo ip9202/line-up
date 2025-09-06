@@ -327,30 +327,21 @@ async def add_player_to_lineup(
                 # 투수인 경우: 기존 선수들과 중복 체크 없이 추가 (투수는 타자와 중복 가능)
                 pass
         
-        # 중복 체크: 같은 선수가 이미 라인업에 있는지 확인
-        existing_player = db.query(LineupPlayer).filter(
-            LineupPlayer.lineup_id == lineup_id,
-            LineupPlayer.player_id == player_data.player_id
-        ).first()
-        
-        if existing_player:
-            # 투수와 타자는 서로 중복 가능
-            if (existing_player.position == 'P' and player_data.position != 'P') or \
-               (existing_player.position != 'P' and player_data.position == 'P'):
-                # 투수 ↔ 타자 중복은 허용
-                pass
-            else:
-                # 같은 타입(타자↔타자, 투수↔투수)은 중복 불가
-                if player_data.position != 'P':
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"해당 선수는 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다. 타자는 중복 배정이 불가능합니다."
-                    )
-                else:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"해당 선수는 이미 투수로 배정되어 있습니다. 투수는 중복 배정이 불가능합니다."
-                    )
+        # 중복 체크: 1~9번 타자들만 포지션 중복 체크
+        if player_data.position and player_data.position != 'P':
+            # 같은 포지션에 다른 선수가 있는지 확인 (1~9번만)
+            existing_player = db.query(LineupPlayer).filter(
+                LineupPlayer.lineup_id == lineup_id,
+                LineupPlayer.position == player_data.position,
+                LineupPlayer.batting_order >= 1,
+                LineupPlayer.batting_order <= 9
+            ).first()
+            
+            if existing_player:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"해당 포지션({player_data.position})은 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다."
+                )
     
     # Create lineup player
     player_data_dict = player_data.dict()
@@ -390,32 +381,22 @@ async def update_lineup_player_position(
     if new_position == '':
         new_position = None
     
-    # 중복 체크: 같은 선수가 이미 다른 포지션에 있는지 확인
-    if new_position:
+    # 중복 체크: 1~9번 타자들만 포지션 중복 체크
+    if new_position and new_position != 'P':
+        # 같은 포지션에 다른 선수가 있는지 확인 (1~9번만)
         existing_player = db.query(LineupPlayer).filter(
             LineupPlayer.lineup_id == lineup_id,
-            LineupPlayer.player_id == lineup_player.player_id,
+            LineupPlayer.position == new_position,
+            LineupPlayer.batting_order >= 1,
+            LineupPlayer.batting_order <= 9,
             LineupPlayer.id != lineup_player_id  # 현재 업데이트 중인 레코드 제외
         ).first()
         
         if existing_player:
-            # 투수와 타자는 서로 중복 가능
-            if (existing_player.position == 'P' and new_position != 'P') or \
-               (existing_player.position != 'P' and new_position == 'P'):
-                # 투수 ↔ 타자 중복은 허용
-                pass
-            else:
-                # 같은 타입(타자↔타자, 투수↔투수)은 중복 불가
-                if new_position != 'P':
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"해당 선수는 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다. 타자는 중복 배정이 불가능합니다."
-                    )
-                else:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"해당 선수는 이미 투수로 배정되어 있습니다. 투수는 중복 배정이 불가능합니다."
-                    )
+            raise HTTPException(
+                status_code=400,
+                detail=f"해당 포지션({new_position})은 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다."
+            )
     
     lineup_player.position = new_position
     db.commit()
