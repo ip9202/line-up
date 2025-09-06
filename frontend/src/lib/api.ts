@@ -39,8 +39,8 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Axios 인스턴스 생성 전 URL 재검증
-const FINAL_URL = FORCE_HTTPS_URL.replace('http://', 'https://')
+// Axios 인스턴스 생성 전 URL 재검증 - 개발서버는 HTTP 유지
+const FINAL_URL = import.meta.env.DEV ? FORCE_HTTPS_URL : FORCE_HTTPS_URL.replace('http://', 'https://')
 console.log('최종 API URL:', FINAL_URL)
 
 export const api = axios.create({
