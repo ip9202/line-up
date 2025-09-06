@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 import uvicorn
 import os
 import subprocess
@@ -47,6 +47,21 @@ allowed_origins = [
 # Add Railway domains if available
 if os.getenv("ALLOWED_ORIGINS"):
     allowed_origins.extend(os.getenv("ALLOWED_ORIGINS").split(","))
+
+# HTTPS 강제 미들웨어 (프로덕션 환경에서만)
+@app.middleware("http")
+async def force_https_redirect(request: Request, call_next):
+    # 프로덕션 환경에서만 HTTPS 강제
+    if os.getenv("ENVIRONMENT") == "production" or os.getenv("RAILWAY_ENVIRONMENT"):
+        # X-Forwarded-Proto 헤더 확인 (Railway에서 제공)
+        forwarded_proto = request.headers.get("X-Forwarded-Proto")
+        if forwarded_proto == "http":
+            # HTTP 요청을 HTTPS로 리다이렉트
+            https_url = str(request.url).replace("http://", "https://", 1)
+            return RedirectResponse(url=https_url, status_code=301)
+    
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,
