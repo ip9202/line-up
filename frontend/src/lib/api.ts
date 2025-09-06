@@ -52,10 +52,11 @@ export const api = axios.create({
   protocol: 'https:',
   // 요청 타임아웃 설정
   timeout: 10000,
-  // JSON 직렬화 처리 (URLSearchParams 제외)
+  // JSON 직렬화 처리 (프로덕션에서만, URLSearchParams 제외)
   transformRequest: [(data, headers) => {
     console.log('transformRequest 실행:', { data, headers })
-    if (data && typeof data === 'object' && !(data instanceof URLSearchParams)) {
+    // 프로덕션에서만 JSON 직렬화 적용
+    if (import.meta.env.PROD && data && typeof data === 'object' && !(data instanceof URLSearchParams)) {
       return JSON.stringify(data)
     }
     return data
