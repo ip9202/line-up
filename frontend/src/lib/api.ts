@@ -24,38 +24,49 @@ if (import.meta.env.DEV) {
   }
 }
 
+// Axios 인스턴스 생성 전 URL 재검증
+const FINAL_URL = FORCE_HTTPS_URL.replace('http://', 'https://')
+console.log('최종 API URL:', FINAL_URL)
+
 export const api = axios.create({
-  baseURL: FORCE_HTTPS_URL,
+  baseURL: FINAL_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  // HTTPS 강제 설정
-  httpsAgent: {
-    rejectUnauthorized: false // 개발 환경에서만 사용
-  },
+  // 프로토콜 강제 설정
+  protocol: 'https:',
+  // 요청 타임아웃 설정
+  timeout: 10000,
   // 요청 URL 강제 HTTPS 변환
   transformRequest: [(data, headers) => {
-    // 요청 URL이 HTTP로 시작하면 HTTPS로 변경
-    if (headers && headers.url && headers.url.startsWith('http://')) {
-      headers.url = headers.url.replace('http://', 'https://')
-    }
+    console.log('transformRequest 실행:', { data, headers })
     return data
   }]
 })
 
+// Axios 기본 설정 강제 적용
+axios.defaults.baseURL = FINAL_URL
+axios.defaults.timeout = 10000
+
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
-    // URL 강제 HTTPS 변환
-    if (config.url && config.url.startsWith('http://')) {
+    // 모든 URL을 강제로 HTTPS로 변환
+    if (config.url) {
       config.url = config.url.replace('http://', 'https://')
-      console.log('URL 강제 HTTPS 변환:', config.url)
     }
     
-    // baseURL 강제 HTTPS 변환
-    if (config.baseURL && config.baseURL.startsWith('http://')) {
+    if (config.baseURL) {
       config.baseURL = config.baseURL.replace('http://', 'https://')
-      console.log('baseURL 강제 HTTPS 변환:', config.baseURL)
+    }
+    
+    // 최종 URL 재구성
+    const finalUrl = `${config.baseURL}${config.url}`
+    if (finalUrl.includes('http://')) {
+      const httpsUrl = finalUrl.replace('http://', 'https://')
+      console.log('최종 URL 강제 HTTPS 변환:', finalUrl, '->', httpsUrl)
+      // URL을 직접 설정
+      config.url = httpsUrl.replace(config.baseURL || '', '')
     }
     
     // 모든 환경에서 요청 정보 로그 출력
