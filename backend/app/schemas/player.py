@@ -9,6 +9,7 @@ class PlayerBase(BaseModel):
     phone: str
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
+    team_id: Optional[int] = None
     role: PlayerRole = PlayerRole.PLAYER
     age: Optional[int] = None
     birth_date: Optional[date] = None
@@ -31,6 +32,7 @@ class PlayerUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
+    team_id: Optional[int] = None
     role: Optional[PlayerRole] = None
     age: Optional[int] = None
     birth_date: Optional[date] = None
