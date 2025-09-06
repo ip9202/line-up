@@ -10,7 +10,7 @@ class Player(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     number = Column(Integer, unique=True)
-    phone = Column(String(20), nullable=False)
+    phone = Column(String(20), nullable=True)
     email = Column(String(100))
     photo_url = Column(Text)
     
