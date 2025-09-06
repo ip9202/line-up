@@ -9,7 +9,7 @@ class LineupPlayer(Base):
     id = Column(Integer, primary_key=True, index=True)
     lineup_id = Column(Integer, ForeignKey("lineups.id"), nullable=False)
     player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
-    position = Column(String(20), nullable=False)
+    position = Column(String(20), nullable=True)
     batting_order = Column(Integer, nullable=False)
     is_starter = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
