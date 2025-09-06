@@ -173,6 +173,47 @@ async def create_lineup(
     from app.models.team import Team
     from app.models.venue import Venue
     
+    # 기존 라인업이 있는지 확인
+    existing_lineup = db.query(Lineup).filter(Lineup.game_id == lineup.game_id).first()
+    if existing_lineup:
+        # 기존 라인업이 있으면 그 라인업을 반환
+        game = db.query(Game).filter(Game.id == existing_lineup.game_id).first()
+        if game:
+            # 상대팀 정보 조회
+            opponent_team = db.query(Team).filter(Team.id == game.opponent_team_id).first()
+            # 경기장 정보 조회
+            venue = db.query(Venue).filter(Venue.id == game.venue_id).first()
+            
+            # 경기 정보를 딕셔너리로 변환
+            game_data = {
+                "id": game.id,
+                "date": game.game_date,
+                "venue": {
+                    "id": venue.id if venue else None,
+                    "name": venue.name if venue else None,
+                    "location": venue.location if venue else None
+                } if venue else None,
+                "opponent_team": {
+                    "id": opponent_team.id if opponent_team else None,
+                    "name": opponent_team.name if opponent_team else None
+                } if opponent_team else None,
+                "is_home": game.is_home
+            }
+            
+            # 라인업을 딕셔너리로 변환하고 경기 정보 추가
+            lineup_dict = {
+                "id": existing_lineup.id,
+                "name": existing_lineup.name,
+                "game_id": existing_lineup.game_id,
+                "game": game_data,
+                "created_at": existing_lineup.created_at,
+                "updated_at": existing_lineup.updated_at
+            }
+            return lineup_dict
+        
+        return existing_lineup
+    
+    # 새 라인업 생성
     db_lineup = Lineup(**lineup.dict())
     db.add(db_lineup)
     db.commit()
