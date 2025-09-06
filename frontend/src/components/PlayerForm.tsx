@@ -139,13 +139,11 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
       newErrors.team_id = '소속팀을 선택해주세요.'
     }
 
-    // 등번호 중복 검증 (같은 팀 내에서만, 생성 모드에서만)
-    if (!player && formData.number && formData.team_id) {
-      const existingPlayer = players?.find(p => 
-        p.number === formData.number && p.team_id === formData.team_id
-      )
+    // 등번호 중복 검증 (전체 선수 중에서, 생성 모드에서만)
+    if (!player && formData.number) {
+      const existingPlayer = players?.find(p => p.number === formData.number)
       if (existingPlayer) {
-        newErrors.number = `해당 팀에서 등번호 ${formData.number}번은 이미 사용 중입니다.`
+        newErrors.number = `등번호 ${formData.number}번은 이미 사용 중입니다.`
       }
     }
 
@@ -201,10 +199,18 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
       }
       
       onClose()
-    } catch (error) {
+    } catch (error: any) {
       console.error('선수 저장 실패:', error)
       console.error('에러 상세:', error)
-      alert(`선수 저장에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`)
+      
+      // Axios 에러인 경우 응답 데이터 확인
+      if (error.response) {
+        console.error('응답 상태:', error.response.status)
+        console.error('응답 데이터:', error.response.data)
+        alert(`선수 저장에 실패했습니다: ${error.response.data?.detail || error.response.data?.message || error.message}`)
+      } else {
+        alert(`선수 저장에 실패했습니다: ${error.message || '알 수 없는 오류'}`)
+      }
     } finally {
       setIsSubmitting(false)
     }
