@@ -45,6 +45,12 @@ export const removePlayerFromLineup = async (lineupId: number, lineupPlayerId: n
   await api.delete(`/lineups/${lineupId}/players/${lineupPlayerId}`)
 }
 
+// 라인업 선수 포지션 변경
+export const updateLineupPlayerPosition = async (lineupId: number, lineupPlayerId: number, position: string) => {
+  const response = await api.put(`/lineups/${lineupId}/players/${lineupPlayerId}`, { position })
+  return response.data
+}
+
 // 라인업 복사
 export const copyLineup = async (lineupId: number, newName: string, newGameId?: number): Promise<Lineup> => {
   const response = await api.post(`/lineups/${lineupId}/copy`, {

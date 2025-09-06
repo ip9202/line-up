@@ -8,6 +8,7 @@ import PlayerCard from './PlayerCard'
 import { Search, Filter, Users, Target, AlertCircle, Calendar, MapPin, X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { getAttendance, updateAttendance } from '../services/attendanceService'
+import { updateLineupPlayerPosition } from '../services/lineupService'
 import api from '../lib/api'
 
 interface LineupEditorProps {
@@ -242,9 +243,7 @@ export default function LineupEditor({ lineupId }: LineupEditorProps) {
       
       if (lineupPlayer) {
         // 백엔드 API 호출하여 포지션 업데이트
-        await api.put(`/lineups/${lineupId}/players/${lineupPlayer.id}`, {
-          position: newPosition
-        })
+        await updateLineupPlayerPosition(lineupId, lineupPlayer.id, newPosition)
 
         // 로컬 상태 업데이트
         setLineupData(prev => ({
