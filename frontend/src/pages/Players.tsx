@@ -24,7 +24,10 @@ export default function Players() {
   const { data: players, isLoading, error } = usePlayers({
     role: selectedRole || undefined
   })
-  const { data: teams } = useTeams()
+  const { data: teams, isLoading: teamsLoading, error: teamsError } = useTeams()
+  
+  // 디버깅용 로그
+  console.log('팀 데이터:', { teams, teamsLoading, teamsError })
   const deletePlayerMutation = useDeletePlayer()
 
   // 권한 체크 함수들
@@ -44,6 +47,7 @@ export default function Players() {
   const getTeamName = (teamId?: number) => {
     if (!teamId || !teams) return ''
     const team = teams.find(t => t.id === teamId)
+    console.log('팀 찾기:', { teamId, teams, team })
     return team?.name || ''
   }
 
