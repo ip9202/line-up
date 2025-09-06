@@ -1,7 +1,8 @@
 import api from '../lib/api'
 import { Team, TeamCreate, TeamUpdate } from '../types'
+import { API_ENDPOINTS } from '../constants'
 
-const API_BASE_URL = '/teams'
+const API_BASE_URL = API_ENDPOINTS.TEAMS
 
 export const teamService = {
   // 팀 목록 조회
@@ -17,7 +18,7 @@ export const teamService = {
     if (params?.active !== undefined) searchParams.append('active', params.active.toString())
     if (params?.league) searchParams.append('league', params.league)
 
-    const url = searchParams.toString() ? `${API_BASE_URL}/?${searchParams}` : API_BASE_URL
+    const url = searchParams.toString() ? `${API_BASE_URL}?${searchParams}` : API_BASE_URL
     const response = await api.get(url)
     return response.data
   },

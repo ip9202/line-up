@@ -56,8 +56,15 @@ export default function LineupEditorPage() {
   // URL 파라미터에서 gameId 처리
   useEffect(() => {
     const gameId = searchParams.get('gameId')
-    console.log('URL gameId:', gameId)
+    console.log('URL gameId:', gameId, 'lineupsLoading:', lineupsLoading, 'gamesLoading:', gamesLoading)
     console.log('lineups:', lineups)
+    
+    // 데이터 로딩이 완료되지 않으면 대기
+    if (lineupsLoading || gamesLoading) {
+      console.log('데이터 로딩 중... 대기')
+      return
+    }
+    
     if (gameId) {
       setSelectedGameId(parseInt(gameId))
       // gameId가 있으면 바로 라인업 편집 모드로 진입
@@ -74,7 +81,7 @@ export default function LineupEditorPage() {
         setSelectedLineupId(gameLineups[0].id)
       }
     }
-  }, [searchParams, lineups])
+  }, [searchParams, lineups, lineupsLoading, gamesLoading])
 
   // 라인업 생성 후 selectedLineupId 설정
   useEffect(() => {
@@ -109,6 +116,19 @@ export default function LineupEditorPage() {
   // 디버깅용 로그
   console.log('경기 데이터:', games)
   console.log('라인업 데이터:', lineups)
+
+  // 로딩 상태 체크
+  if (lineupsLoading || gamesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">데이터 로딩 중...</h3>
+          <p className="text-gray-500">경기 및 라인업 정보를 불러오고 있습니다.</p>
+        </div>
+      </div>
+    )
+  }
 
   // 경기 선택 화면
   if (!selectedGameId) {

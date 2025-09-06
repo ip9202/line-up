@@ -92,9 +92,19 @@ export default function Games() {
       }
       setIsFormOpen(false)
       setEditingGame(null)
-    } catch (error) {
+    } catch (error: any) {
       console.error('경기 저장 실패:', error)
-      alert('경기 저장에 실패했습니다.')
+      console.error('오류 응답:', error.response?.data)
+      console.error('오류 상세:', JSON.stringify(error.response?.data, null, 2))
+      
+      if (error.response?.data?.detail) {
+        const details = Array.isArray(error.response.data.detail) 
+          ? error.response.data.detail.map((d: any) => `${d.loc?.join('.')}: ${d.msg}`).join('\n')
+          : error.response.data.detail
+        alert(`경기 저장에 실패했습니다:\n${details}`)
+      } else {
+        alert('경기 저장에 실패했습니다.')
+      }
     }
   }
 

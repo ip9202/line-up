@@ -39,12 +39,12 @@ export const PAGINATION = {
 
 // API 엔드포인트 (개발 환경용)
 export const API_ENDPOINTS = {
-  AUTH: '/auth',
+  AUTH: '/auth/',
   PLAYERS: '/players/',
-  TEAMS: '/teams',
+  TEAMS: '/teams/',
   GAMES: '/games/', 
   LINEUPS: '/lineups/',
-  VENUES: '/venues',
-  PDF: '/pdf',
-  EXCEL: '/excel',
+  VENUES: '/venues/',
+  PDF: '/pdf/',
+  EXCEL: '/excel/',
 } as const

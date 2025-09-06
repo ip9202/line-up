@@ -155,6 +155,36 @@ export default function LineupSheetPage() {
               .print-button {
                 display: none !important;
               }
+              body {
+                font-size: 10px !important;
+              }
+              h1 {
+                font-size: 16px !important;
+                margin-bottom: 8px !important;
+              }
+              h2 {
+                font-size: 12px !important;
+                padding: 4px 8px !important;
+                margin-bottom: 6px !important;
+              }
+              th, td {
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                line-height: 1.1 !important;
+                white-space: nowrap !important;
+              }
+              .game-info-table td {
+                padding: 4px 6px !important;
+                font-size: 8px !important;
+                line-height: 1.1 !important;
+                white-space: nowrap !important;
+              }
+              .printable-sheet {
+                padding: 15px !important;
+              }
+              .grid {
+                gap: 8px !important;
+              }
             }
             h1 {
               font-size: 24px;
@@ -497,13 +527,13 @@ export default function LineupSheetPage() {
                             ${Array.from({ length: 27 }, (_, index) => {
                               const playerNumber = index + 1
                               const player = players.find(p => Number(p.number) === playerNumber)
-                              const isInLineup = player ? lineup.lineup_players?.some(lp => lp.player_id === player.id) : false
+                              const isPresent = player ? (attendance[player.id] || false) : false
                               return `
                                 <tr>
                                   <td class="px-4 py-3 text-center">${playerNumber}</td>
                                   <td class="px-4 py-3 text-center">${player?.name || ''}</td>
                                   <td class="px-4 py-3 text-center">${player?.number || ''}</td>
-                                  <td class="px-4 py-3 text-center">${isInLineup ? 'V' : ''}</td>
+                                  <td class="px-4 py-3 text-center">${isPresent ? 'V' : '-'}</td>
                                 </tr>
                               `
                             }).join('')}

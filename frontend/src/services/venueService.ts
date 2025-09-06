@@ -1,7 +1,8 @@
 import api from '@/lib/api'
 import { Venue, VenueCreate, VenueUpdate } from '../types'
+import { API_ENDPOINTS } from '../constants'
 
-const API_BASE_URL = '/venues'
+const API_BASE_URL = API_ENDPOINTS.VENUES
 
 export const venueService = {
   // 경기장 목록 조회
@@ -16,7 +17,7 @@ export const venueService = {
     if (params?.limit) searchParams.append('limit', params.limit.toString())
     if (params?.active !== undefined) searchParams.append('active', params.active.toString())
 
-    const url = searchParams.toString() ? `${API_BASE_URL}/?${searchParams}` : API_BASE_URL
+    const url = searchParams.toString() ? `${API_BASE_URL}?${searchParams}` : API_BASE_URL
     console.log('venueService.getVenues URL:', url)
     const response = await api.get(url)
     console.log('venueService.getVenues 응답:', response.data)

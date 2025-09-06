@@ -1,48 +1,17 @@
 import axios from 'axios'
 
-// API 기본 설정 - Railway 환경에서 강제 HTTPS
-const getApiBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL
-  const defaultUrl = import.meta.env.DEV 
-    ? 'http://localhost:8002/api/v1'  // 개발서버는 HTTP 사용
-    : 'https://line-up-backend-production.up.railway.app/api/v1'
-  
-  const baseUrl = envUrl || defaultUrl
-  
-  // 프로덕션에서만 HTTPS 강제
-  if (!import.meta.env.DEV && baseUrl.startsWith('http://')) {
-    return baseUrl.replace('http://', 'https://')
-  }
-  
-  return baseUrl
-}
-
-const API_BASE_URL = getApiBaseUrl()
+// API 기본 설정 - 개발환경에서는 무조건 HTTP 사용
+const API_BASE_URL = import.meta.env.DEV 
+  ? 'http://localhost:8002/api/v1'  // 개발환경: 항상 HTTP
+  : (import.meta.env.VITE_API_BASE_URL || 'https://line-up-backend-production.up.railway.app/api/v1')  // 프로덕션: 환경변수 또는 기본 HTTPS
 
 // 디버깅용 로그
 console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
 console.log('API_BASE_URL:', API_BASE_URL)
 console.log('DEV mode:', import.meta.env.DEV)
 
-// HTTPS 강제 설정 - 개발서버와 프로덕션 서버 구분
-let FORCE_HTTPS_URL = API_BASE_URL
-if (import.meta.env.DEV) {
-  // 개발서버에서는 localhost이므로 HTTP 유지
-  console.log('개발서버 - HTTP URL 유지:', FORCE_HTTPS_URL)
-} else {
-  // 프로덕션에서는 HTTP를 HTTPS로 변환
-  if (API_BASE_URL.startsWith('http://')) {
-    FORCE_HTTPS_URL = API_BASE_URL.replace('http://', 'https://')
-    console.log('프로덕션 - HTTP를 HTTPS로 변환:', FORCE_HTTPS_URL)
-  } else {
-    console.log('프로덕션 - 이미 HTTPS URL:', FORCE_HTTPS_URL)
-  }
-}
-
-// Axios 인스턴스 생성 전 URL 재검증 - 개발서버는 HTTP 유지
-const FINAL_URL = import.meta.env.DEV 
-  ? API_BASE_URL  // 개발서버는 원본 API_BASE_URL 사용 (HTTP)
-  : FORCE_HTTPS_URL.replace('http://', 'https://')  // 프로덕션은 HTTPS 강제
+// 최종 API URL - 개발환경에서는 HTTP 강제
+const FINAL_URL = API_BASE_URL
 console.log('최종 API URL:', FINAL_URL)
 
 export const api = axios.create({
@@ -50,19 +19,11 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // 프로토콜 강제 설정
-  protocol: 'https:',
+  // 개발환경에서는 프로토콜 강제 설정하지 않음
+  ...(import.meta.env.PROD && { protocol: 'https:' }),
   // 요청 타임아웃 설정
   timeout: 10000,
-  // JSON 직렬화 처리 (프로덕션에서만, URLSearchParams 제외)
-  transformRequest: [(data, headers) => {
-    console.log('transformRequest 실행:', { data, headers })
-    // 프로덕션에서만 JSON 직렬화 적용
-    if (import.meta.env.PROD && data && typeof data === 'object' && !(data instanceof URLSearchParams)) {
-      return JSON.stringify(data)
-    }
-    return data
-  }]
+  // transformRequest 제거 - Axios 기본 동작 사용
 })
 
 // Axios 기본 설정 강제 적용
@@ -72,8 +33,17 @@ axios.defaults.timeout = 10000
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
-    // 프로덕션에서만 HTTPS 강제 변환
-    if (import.meta.env.PROD) {
+    // 개발환경에서는 모든 URL을 HTTP로 강제 변환
+    if (import.meta.env.DEV) {
+      if (config.baseURL && config.baseURL.startsWith('https://')) {
+        config.baseURL = config.baseURL.replace('https://', 'http://')
+      }
+      if (config.url && config.url.includes('https://')) {
+        config.url = config.url.replace('https://', 'http://')
+      }
+      console.log('개발서버 - HTTP로 강제 변환:', `${config.baseURL}${config.url}`)
+    } else {
+      // 프로덕션에서만 HTTPS 강제 변환
       if (config.url) {
         config.url = config.url.replace('http://', 'https://')
       }
@@ -81,17 +51,7 @@ api.interceptors.request.use(
       if (config.baseURL) {
         config.baseURL = config.baseURL.replace('http://', 'https://')
       }
-      
-      // 최종 URL 재구성
-      const finalUrl = `${config.baseURL}${config.url}`
-      if (finalUrl.includes('http://')) {
-        const httpsUrl = finalUrl.replace('http://', 'https://')
-        console.log('최종 URL 강제 HTTPS 변환:', finalUrl, '->', httpsUrl)
-        // URL을 직접 설정
-        config.url = httpsUrl.replace(config.baseURL || '', '')
-      }
-    } else {
-      console.log('개발서버 - HTTP URL 유지:', `${config.baseURL}${config.url}`)
+      console.log('프로덕션서버 - HTTPS 사용:', `${config.baseURL}${config.url}`)
     }
     
     // 모든 환경에서 요청 정보 로그 출력
@@ -101,7 +61,8 @@ api.interceptors.request.use(
       baseURL: config.baseURL,
       url: config.url,
       method: config.method,
-      headers: config.headers
+      headers: config.headers,
+      data: config.data
     })
     
     // 토큰 자동 추가

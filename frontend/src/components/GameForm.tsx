@@ -19,6 +19,9 @@ export default function GameForm({ isOpen, onClose, onSubmit, game, isLoading = 
     game_time: '',
     venue_id: '',
     is_home: true,
+    game_type: 'REGULAR',
+    status: 'SCHEDULED',
+    notes: '',
   })
 
   const { data: teams = [] } = useTeams({ active: true })
@@ -32,6 +35,9 @@ export default function GameForm({ isOpen, onClose, onSubmit, game, isLoading = 
         game_time: game.game_date ? game.game_date.split('T')[1]?.substring(0, 5) : '',
         venue_id: game.venue_id?.toString() || '',
         is_home: game.is_home ?? true,
+        game_type: game.game_type || 'REGULAR',
+        status: game.status || 'SCHEDULED',
+        notes: game.notes || '',
       })
     } else {
       setFormData({
@@ -40,6 +46,9 @@ export default function GameForm({ isOpen, onClose, onSubmit, game, isLoading = 
         game_time: '',
         venue_id: '',
         is_home: true,
+        game_type: 'REGULAR',
+        status: 'SCHEDULED',
+        notes: '',
       })
     }
   }, [game, isOpen])
@@ -57,8 +66,12 @@ export default function GameForm({ isOpen, onClose, onSubmit, game, isLoading = 
       game_date: `${formData.game_date}T${formData.game_time}:00`,
       venue_id: parseInt(formData.venue_id),
       is_home: formData.is_home,
+      game_type: formData.game_type,
+      status: formData.status,
+      notes: formData.notes || null,
     }
 
+    console.log('전송할 게임 데이터:', gameData)
     onSubmit(gameData)
   }
 
@@ -189,6 +202,39 @@ export default function GameForm({ isOpen, onClose, onSubmit, game, isLoading = 
                 어웨이 경기
               </label>
             </div>
+          </div>
+
+          {/* 경기 타입 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              경기 타입
+            </label>
+            <select
+              name="game_type"
+              value={formData.game_type}
+              onChange={handleChange}
+              className="form-select w-full"
+            >
+              <option value="REGULAR">정규경기</option>
+              <option value="FRIENDLY">친선경기</option>
+              <option value="TOURNAMENT">대회</option>
+              <option value="PRACTICE">연습경기</option>
+            </select>
+          </div>
+
+          {/* 메모 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              메모
+            </label>
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              className="form-textarea w-full"
+              rows={3}
+              placeholder="경기 관련 메모를 입력하세요"
+            />
           </div>
 
           {/* 버튼 */}
