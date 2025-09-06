@@ -506,30 +506,36 @@ export default function Players() {
                 </div>
 
                 {/* 페이지 네비게이션 */}
-                <div className="flex items-center gap-1">
-                  {/* 첫 페이지 */}
-                  <button
-                    onClick={goToFirstPage}
-                    disabled={currentPage === 1}
-                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="첫 페이지"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    <ChevronLeft className="h-4 w-4 -ml-2" />
-                  </button>
-
+                <div className="flex items-center gap-2">
                   {/* 이전 페이지 */}
                   <button
                     onClick={goToPreviousPage}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                     title="이전 페이지"
                   >
                     <ChevronLeft className="h-4 w-4" />
+                    <span className="text-sm">이전</span>
                   </button>
 
                   {/* 페이지 번호들 */}
                   <div className="flex items-center gap-1">
+                    {/* 첫 페이지 */}
+                    {totalPages > 5 && currentPage > 3 && (
+                      <>
+                        <button
+                          onClick={() => handlePageChange(1)}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-300 transition-colors"
+                        >
+                          1
+                        </button>
+                        {currentPage > 4 && (
+                          <span className="px-2 text-gray-400">...</span>
+                        )}
+                      </>
+                    )}
+
+                    {/* 페이지 번호들 */}
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNum;
                       if (totalPages <= 5) {
@@ -548,7 +554,7 @@ export default function Players() {
                           onClick={() => handlePageChange(pageNum)}
                           className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             currentPage === pageNum
-                              ? 'bg-blue-600 text-white'
+                              ? 'bg-blue-600 text-white border border-blue-600'
                               : 'text-gray-600 hover:bg-gray-50 border border-gray-300'
                           }`}
                         >
@@ -556,27 +562,32 @@ export default function Players() {
                         </button>
                       );
                     })}
+
+                    {/* 마지막 페이지 */}
+                    {totalPages > 5 && currentPage < totalPages - 2 && (
+                      <>
+                        {currentPage < totalPages - 3 && (
+                          <span className="px-2 text-gray-400">...</span>
+                        )}
+                        <button
+                          onClick={() => handlePageChange(totalPages)}
+                          className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 border border-gray-300 transition-colors"
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
                   </div>
 
                   {/* 다음 페이지 */}
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-3 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
                     title="다음 페이지"
                   >
+                    <span className="text-sm">다음</span>
                     <ChevronRight className="h-4 w-4" />
-                  </button>
-
-                  {/* 마지막 페이지 */}
-                  <button
-                    onClick={goToLastPage}
-                    disabled={currentPage === totalPages}
-                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    title="마지막 페이지"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                    <ChevronRight className="h-4 w-4 -ml-2" />
                   </button>
                 </div>
               </div>
