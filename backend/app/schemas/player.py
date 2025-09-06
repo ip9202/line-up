@@ -5,7 +5,7 @@ from app.enums.player_role import PlayerRole
 
 class PlayerBase(BaseModel):
     name: str
-    number: Optional[int] = None
+    number: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
@@ -28,7 +28,7 @@ class PlayerCreate(PlayerBase):
 
 class PlayerUpdate(BaseModel):
     name: Optional[str] = None
-    number: Optional[int] = None
+    number: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[EmailStr] = None
     photo_url: Optional[str] = None
