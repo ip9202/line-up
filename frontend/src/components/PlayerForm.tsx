@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, Save, User } from 'lucide-react'
-import { useCreatePlayer, useUpdatePlayer } from '../hooks/usePlayers'
+import { useCreatePlayer, useUpdatePlayer, usePlayers } from '../hooks/usePlayers'
 import { useTeams } from '../hooks/useTeams'
 import { Player, PlayerCreate, PlayerUpdate, PlayerRole } from '../types'
 
@@ -36,6 +36,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
   const createPlayerMutation = useCreatePlayer()
   const updatePlayerMutation = useUpdatePlayer()
   const { data: teams, isLoading: teamsLoading } = useTeams()
+  const { data: players } = usePlayers()
 
   // 편집 모드일 때 기존 데이터로 폼 초기화
   useEffect(() => {
@@ -133,6 +134,21 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
 
     if (formData.weight && (formData.weight < 30 || formData.weight > 200)) {
       newErrors.weight = '체중은 30-200kg 사이여야 합니다.'
+    }
+
+    // 소속팀 필수 검증
+    if (!formData.team_id) {
+      newErrors.team_id = '소속팀을 선택해주세요.'
+    }
+
+    // 등번호 중복 검증 (같은 팀 내에서만, 생성 모드에서만)
+    if (!player && formData.number && formData.team_id) {
+      const existingPlayer = players?.find(p => 
+        p.number === formData.number && p.team_id === formData.team_id
+      )
+      if (existingPlayer) {
+        newErrors.number = `해당 팀에서 등번호 ${formData.number}번은 이미 사용 중입니다.`
+      }
     }
 
     setErrors(newErrors)
@@ -240,11 +256,12 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
                 name="number"
                 value={formData.number || ''}
                 onChange={handleChange}
-                className="form-input"
+                className={`form-input ${errors.number ? 'border-red-500' : ''}`}
                 placeholder="등번호"
                 min="1"
                 max="99"
               />
+              {errors.number && <p className="text-red-500 text-sm mt-1">{errors.number}</p>}
             </div>
 
             <div>
@@ -265,13 +282,16 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">소속 팀</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                소속 팀 <span className="text-red-500">*</span>
+              </label>
               <select
                 name="team_id"
                 value={formData.team_id || ''}
                 onChange={handleChange}
-                className="form-select"
+                className={`form-select ${errors.team_id ? 'border-red-500' : ''}`}
                 disabled={teamsLoading}
+                required
               >
                 <option value="">팀을 선택하세요</option>
                 {teams?.map((team) => (
@@ -283,6 +303,7 @@ export default function PlayerForm({ player, onClose }: PlayerFormProps) {
               {teamsLoading && (
                 <p className="text-sm text-gray-500 mt-1">팀 목록을 불러오는 중...</p>
               )}
+              {errors.team_id && <p className="text-red-500 text-sm mt-1">{errors.team_id}</p>}
             </div>
 
             <div>
