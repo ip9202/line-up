@@ -34,9 +34,15 @@ export const api = axios.create({
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
-    if (import.meta.env.DEV) {
-      console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
-    }
+    // 모든 환경에서 요청 정보 로그 출력
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`)
+    console.log('Full URL:', `${config.baseURL}${config.url}`)
+    console.log('Request config:', {
+      baseURL: config.baseURL,
+      url: config.url,
+      method: config.method,
+      headers: config.headers
+    })
     
     // 토큰 자동 추가
     const token = localStorage.getItem('auth_token')

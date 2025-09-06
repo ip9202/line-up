@@ -11,6 +11,13 @@ export class BaseApiService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
     limit?: number
     [key: string]: any
   }): Promise<T[]> {
+    // 디버깅용 로그 추가
+    console.log('BaseApiService getAll 호출:', {
+      endpoint: this.endpoint,
+      params,
+      baseURL: api.defaults.baseURL
+    })
+    
     const response = await api.get(this.endpoint, { params })
     return response.data
   }
