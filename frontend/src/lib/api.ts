@@ -9,9 +9,20 @@ console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
 console.log('API_BASE_URL:', API_BASE_URL)
 console.log('DEV mode:', import.meta.env.DEV)
 
-// HTTPS 강제 설정
-const FORCE_HTTPS_URL = API_BASE_URL.replace('http://', 'https://')
-console.log('FORCE_HTTPS_URL:', FORCE_HTTPS_URL)
+// HTTPS 강제 설정 - 개발서버와 프로덕션 서버 구분
+let FORCE_HTTPS_URL = API_BASE_URL
+if (import.meta.env.DEV) {
+  // 개발서버에서는 localhost이므로 HTTP 유지
+  console.log('개발서버 - HTTP URL 유지:', FORCE_HTTPS_URL)
+} else {
+  // 프로덕션에서는 HTTP를 HTTPS로 변환
+  if (API_BASE_URL.startsWith('http://')) {
+    FORCE_HTTPS_URL = API_BASE_URL.replace('http://', 'https://')
+    console.log('프로덕션 - HTTP를 HTTPS로 변환:', FORCE_HTTPS_URL)
+  } else {
+    console.log('프로덕션 - 이미 HTTPS URL:', FORCE_HTTPS_URL)
+  }
+}
 
 export const api = axios.create({
   baseURL: FORCE_HTTPS_URL,
