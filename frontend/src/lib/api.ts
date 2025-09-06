@@ -9,8 +9,12 @@ console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
 console.log('API_BASE_URL:', API_BASE_URL)
 console.log('DEV mode:', import.meta.env.DEV)
 
+// HTTPS 강제 설정
+const FORCE_HTTPS_URL = API_BASE_URL.replace('http://', 'https://')
+console.log('FORCE_HTTPS_URL:', FORCE_HTTPS_URL)
+
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: FORCE_HTTPS_URL,
   headers: {
     'Content-Type': 'application/json',
   },
