@@ -56,7 +56,7 @@ export default function LineupCard({
     { value: 'RF', label: 'RF' },
     { value: 'DH', label: 'DH' },
     { value: 'C', label: 'C' },
-    { value: 'P', label: 'P' }
+    { value: 'P', label: '선발' }
   ]
 
   // 사용 가능한 포지션 필터링 (현재 포지션은 제외)
@@ -82,14 +82,14 @@ export default function LineupCard({
       onDragLeave={handleDragLeave}
     >
       <td className="batting-order-cell">
-        {battingOrder === 10 ? 'P' : battingOrder}
+        {battingOrder === 0 ? '선발' : battingOrder}
       </td>
       <td className="position-cell">
         {player ? (
-          battingOrder === 10 ? (
-            // 투수는 포지션 선택 없이 P로 고정
+          battingOrder === 0 ? (
+            // 투수는 포지션 선택 없이 선발로 고정
             <span className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded font-medium">
-              P
+              선발
             </span>
           ) : (
             // 타자는 모든 포지션 선택 가능 (P 포함)
