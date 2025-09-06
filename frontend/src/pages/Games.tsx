@@ -4,7 +4,7 @@ import { Plus, Search, Calendar, MapPin, Users, Edit, Trash2, Eye } from 'lucide
 import { useAuth } from '../contexts/AuthContext'
 import { useGames, useCreateGame, useUpdateGame, useDeleteGame } from '../hooks/useGames'
 import { getGameLineupsCount } from '../services/gameService'
-import { useLineups } from '../hooks/useLineups'
+import { useLineups, useDeleteLineup } from '../hooks/useLineups'
 import { Game } from '../types'
 import GameForm from '../components/GameForm'
 
@@ -23,6 +23,7 @@ export default function Games() {
   const createGameMutation = useCreateGame()
   const updateGameMutation = useUpdateGame()
   const deleteGameMutation = useDeleteGame()
+  const deleteLineupMutation = useDeleteLineup()
 
   // 권한 체크 함수들
   const canManageGames = () => {
@@ -35,6 +36,10 @@ export default function Games() {
 
   const canDeleteGame = () => {
     return isAuthenticated && user?.role === '총무'
+  }
+
+  const canDeleteLineup = () => {
+    return isAuthenticated && user?.role === '감독'
   }
 
   // 필터링된 경기 목록
@@ -79,6 +84,37 @@ export default function Games() {
         } else {
           alert('경기 삭제에 실패했습니다.')
         }
+      }
+    }
+  }
+
+  const handleDeleteLineup = async (game: Game) => {
+    const gameLineups = lineups?.filter(lineup => lineup.game_id === game.id) || []
+    if (gameLineups.length === 0) return
+
+    const opponentName = game.opponent_team?.name || '상대팀'
+    const gameDate = new Date(game.game_date).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    
+    const confirmMessage = `"${opponentName}" 경기의 라인업을 삭제하시겠습니까?\n\n` +
+      `경기 일시: ${gameDate}\n` +
+      `라인업 수: ${gameLineups.length}개`
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        // 해당 경기의 모든 라인업 삭제
+        for (const lineup of gameLineups) {
+          await deleteLineupMutation.mutateAsync(lineup.id)
+        }
+        alert('라인업이 삭제되었습니다.')
+      } catch (error: any) {
+        console.error('라인업 삭제 실패:', error)
+        alert('라인업 삭제에 실패했습니다.')
       }
     }
   }
@@ -247,6 +283,18 @@ export default function Games() {
                         수정
                       </button>
                     )}
+                    {canDeleteLineup() && (() => {
+                      const gameLineups = lineups?.filter(lineup => lineup.game_id === game.id) || []
+                      return gameLineups.length > 0 && (
+                        <button 
+                          onClick={() => handleDeleteLineup(game)}
+                          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-orange-600 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 hover:border-orange-300 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          라인업 삭제
+                        </button>
+                      )
+                    })()}
                     {canDeleteGame() && (
                       <button 
                         onClick={() => handleDeleteGame(game)}
