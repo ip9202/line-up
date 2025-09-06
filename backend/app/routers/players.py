@@ -29,7 +29,8 @@ async def get_players(
     if role:
         query = query.filter(Player.role == role)
     
-    players = query.offset(skip).limit(limit).all()
+    # 최신 선수가 먼저 나오도록 created_at 기준 내림차순 정렬
+    players = query.order_by(Player.created_at.desc()).offset(skip).limit(limit).all()
     return players
 
 @router.get("/{player_id}", response_model=PlayerResponse)
