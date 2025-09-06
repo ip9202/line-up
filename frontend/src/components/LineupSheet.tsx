@@ -64,6 +64,12 @@ export default function LineupSheet({
     lineupPlayer.batting_order === 0
   )
 
+  // 라인업에 포함된 선수 ID들
+  const lineupPlayerIds = new Set(lineup.lineup_players.map(lp => lp.player_id))
+
+  // 라인업에 포함되지 않은 선수들만 필터링
+  const availablePlayers = allPlayers.filter(player => !lineupPlayerIds.has(player.id))
+
   // 경기 날짜 포맷팅
   const formatGameDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -266,21 +272,22 @@ export default function LineupSheet({
                 </tr>
               </thead>
               <tbody>
-                {allPlayers.map((player, index) => {
-                  const isPresent = attendance[player.id] || false
+                {Array.from({ length: 27 }, (_, index) => {
+                  const player = availablePlayers[index]
+                  const isPresent = player ? (attendance[player.id] || false) : false
                   return (
-                    <tr key={player.id} className="border-b border-gray-300">
+                    <tr key={player?.id || `empty-${index}`} className="border-b border-gray-300">
                       <td className="px-4 py-3 text-center text-gray-900 border-r border-gray-300">
                         {index + 1}
                       </td>
                       <td className="px-4 py-3 text-center font-medium text-gray-900 border-r border-gray-300">
-                        {player.name}
+                        {player?.name || ''}
                       </td>
                       <td className="px-4 py-3 text-center text-gray-900 border-r border-gray-300">
-                        {player.number || '-'}
+                        {player?.number || ''}
                       </td>
                       <td className="px-4 py-3 text-center text-gray-900">
-                        {isPresent ? 'V' : '-'}
+                        {player ? (isPresent ? 'V' : '-') : ''}
                       </td>
                     </tr>
                   )

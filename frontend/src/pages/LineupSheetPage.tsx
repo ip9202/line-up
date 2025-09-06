@@ -99,6 +99,11 @@ export default function LineupSheetPage() {
       const venueName = selectedGame?.venue?.name || '미정'
       const opponentName = selectedGame?.opponent_team?.name || '상대팀'
 
+      // 라인업에 포함된 선수 ID들
+      const lineupPlayerIds = new Set(lineup.lineup_players.map(lp => lp.player_id))
+      // 라인업에 포함되지 않은 선수들만 필터링
+      const availablePlayers = players.filter(player => !lineupPlayerIds.has(player.id))
+
       // 라인업 시트 HTML 생성
       const lineupSheetHTML = `
         <!DOCTYPE html>
@@ -525,15 +530,14 @@ export default function LineupSheetPage() {
                     </thead>
                                               <tbody>
                             ${Array.from({ length: 27 }, (_, index) => {
-                              const playerNumber = index + 1
-                              const player = players.find(p => Number(p.number) === playerNumber)
+                              const player = availablePlayers[index]
                               const isPresent = player ? (attendance[player.id] || false) : false
                               return `
                                 <tr>
-                                  <td class="px-4 py-3 text-center">${playerNumber}</td>
+                                  <td class="px-4 py-3 text-center">${index + 1}</td>
                                   <td class="px-4 py-3 text-center">${player?.name || ''}</td>
                                   <td class="px-4 py-3 text-center">${player?.number || ''}</td>
-                                  <td class="px-4 py-3 text-center">${isPresent ? 'V' : '-'}</td>
+                                  <td class="px-4 py-3 text-center">${player ? (isPresent ? 'V' : '-') : ''}</td>
                                 </tr>
                               `
                             }).join('')}
