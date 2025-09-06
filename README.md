@@ -139,19 +139,17 @@ line-up/
 │   └── Dockerfile
 ├── docker-compose.yml         # 로컬 개발 환경
 ├── railway.toml              # Railway 배포 설정
-└── docs/                     # 프로젝트 문서
-    ├── PROJECT_PLAN.md       # 프로젝트 기획서
-    ├── TECHNICAL_SPEC.md     # 기술 스펙
-    ├── DATABASE_DESIGN.md    # 데이터베이스 설계
-    └── API_DESIGN.md         # API 설계
+├── README.md                 # 프로젝트 개요
+├── DOCS.md                   # 기술 문서 (API, DB, UI 등)
+├── DEVELOPMENT.md            # 개발 가이드
+└── CHANGELOG.md              # 변경 이력
 ```
 
 ## 📚 문서
 
-- [📋 프로젝트 기획서](PROJECT_PLAN.md)
-- [🔧 기술 스펙](TECHNICAL_SPEC.md)
-- [🗄️ 데이터베이스 설계](DATABASE_DESIGN.md)
-- [🔌 API 설계](API_DESIGN.md)
+- **[📚 DOCS.md](DOCS.md)** - 기술 스펙, API, 데이터베이스, UI 설계
+- **[🛠️ DEVELOPMENT.md](DEVELOPMENT.md)** - 개발 환경, 배포, 트러블슈팅
+- **[📝 CHANGELOG.md](CHANGELOG.md)** - 버전 히스토리, 수정사항
 
 ## 🎨 UI/UX 디자인
 
