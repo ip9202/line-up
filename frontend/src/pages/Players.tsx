@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Plus, Search, Filter, Users, Edit, Trash2, Eye, X, ChevronUp, ChevronDown } from 'lucide-react'
-import { usePlayers, useDeletePlayer } from '../hooks/usePlayers'
+import { Plus, Search, Filter, Users, Edit, Trash2, Eye, X, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePlayers, usePlayersCount, useDeletePlayer } from '../hooks/usePlayers'
 import { useTeams } from '../hooks/useTeams'
 import { Player, PlayerRole } from '../types'
 import PlayerForm from '../components/PlayerForm'
@@ -17,11 +17,20 @@ export default function Players() {
   const [sortField, setSortField] = useState<string>('')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
+  // 페이징 상태
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+
   // 인증 상태
   const { user, isAuthenticated } = useAuth()
 
   // API 호출
   const { data: players, isLoading, error } = usePlayers({
+    role: selectedRole || undefined,
+    skip: (currentPage - 1) * itemsPerPage,
+    limit: itemsPerPage
+  })
+  const { data: totalCount, isLoading: countLoading } = usePlayersCount({
     role: selectedRole || undefined
   })
   const { data: teams, isLoading: teamsLoading, error: teamsError } = useTeams()
@@ -47,6 +56,23 @@ export default function Players() {
     const team = teams.find(t => t.id === teamId)
     return team?.name || ''
   }
+
+  // 페이징 관련 함수들
+  const totalPages = totalCount ? Math.ceil(totalCount / itemsPerPage) : 0
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1) // 페이지 크기 변경 시 첫 페이지로 이동
+  }
+
+  const goToFirstPage = () => setCurrentPage(1)
+  const goToLastPage = () => setCurrentPage(totalPages)
+  const goToPreviousPage = () => setCurrentPage(prev => Math.max(1, prev - 1))
+  const goToNextPage = () => setCurrentPage(prev => Math.min(totalPages, prev + 1))
 
   // 정렬 함수
   const handleSort = (field: string) => {
@@ -224,7 +250,10 @@ export default function Players() {
             </div>
             <select
               value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value)}
+              onChange={(e) => {
+                setSelectedRole(e.target.value)
+                setCurrentPage(1) // 필터 변경 시 첫 페이지로 이동
+              }}
               className="px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white min-w-[140px]"
             >
               <option value="">모든 역할</option>
@@ -447,6 +476,112 @@ export default function Players() {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* 페이지당 항목 수 선택 */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">페이지당 항목:</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value={5}>5개</option>
+                    <option value={10}>10개</option>
+                    <option value={20}>20개</option>
+                    <option value={50}>50개</option>
+                  </select>
+                </div>
+
+                {/* 페이지 정보 */}
+                <div className="text-sm text-gray-600">
+                  {totalCount && (
+                    <>
+                      총 {totalCount}개 중 {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)}-{Math.min(currentPage * itemsPerPage, totalCount)}개 표시
+                    </>
+                  )}
+                </div>
+
+                {/* 페이지 네비게이션 */}
+                <div className="flex items-center gap-1">
+                  {/* 첫 페이지 */}
+                  <button
+                    onClick={goToFirstPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="첫 페이지"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4 -ml-2" />
+                  </button>
+
+                  {/* 이전 페이지 */}
+                  <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="이전 페이지"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+
+                  {/* 페이지 번호들 */}
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            currentPage === pageNum
+                              ? 'bg-blue-600 text-white'
+                              : 'text-gray-600 hover:bg-gray-50 border border-gray-300'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 다음 페이지 */}
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="다음 페이지"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+
+                  {/* 마지막 페이지 */}
+                  <button
+                    onClick={goToLastPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    title="마지막 페이지"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 -ml-2" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         /* Empty State */

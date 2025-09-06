@@ -17,6 +17,22 @@ export const usePlayers = (params?: {
   })
 }
 
+// 선수 총 개수 조회 (페이징용)
+export const usePlayersCount = (params?: {
+  active?: boolean
+  role?: string
+}) => {
+  return useQuery({
+    queryKey: ['players-count', params],
+    queryFn: async () => {
+      const players = await getPlayers({ ...params, skip: 0, limit: 1000 })
+      return players.length
+    },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  })
+}
+
 // 선수 상세 조회
 export const usePlayer = (id: number) => {
   return useQuery({
