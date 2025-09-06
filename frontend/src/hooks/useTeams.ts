@@ -20,7 +20,7 @@ export const useTeams = (params?: {
 export const useTeam = (id: number) => {
   return useQuery({
     queryKey: ['team', id],
-    queryFn: () => teamService.getTeam(id),
+    queryFn: () => teamService.getById(id),
     enabled: !!id,
   })
 }
@@ -30,7 +30,7 @@ export const useCreateTeam = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (team: TeamCreate) => teamService.createTeam(team),
+    mutationFn: (team: TeamCreate) => teamService.create(team),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] })
     },
@@ -43,7 +43,7 @@ export const useUpdateTeam = () => {
 
   return useMutation({
     mutationFn: ({ id, team }: { id: number; team: TeamUpdate }) =>
-      teamService.updateTeam(id, team),
+      teamService.update(id, team),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['teams'] })
       queryClient.invalidateQueries({ queryKey: ['team', data.id] })
@@ -56,7 +56,7 @@ export const useDeleteTeam = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: number) => teamService.deleteTeam(id),
+    mutationFn: (id: number) => teamService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] })
     },
