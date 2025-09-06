@@ -21,9 +21,13 @@ export default defineConfig({
     host: true,
     port: parseInt(process.env.PORT || '3000'),
     allowedHosts: ['healthcheck.railway.app', 'line-up-frontend-production.up.railway.app'],
-    // Mixed Content 방지 헤더만 유지 (HTTPS는 Railway에서 처리)
+    // Mixed Content 방지를 위한 강화된 보안 헤더
     headers: {
-      'Content-Security-Policy': "upgrade-insecure-requests"
+      'Content-Security-Policy': "upgrade-insecure-requests; block-all-mixed-content",
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin'
     }
   },
   build: {

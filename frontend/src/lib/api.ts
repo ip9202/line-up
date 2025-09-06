@@ -1,8 +1,23 @@
 import axios from 'axios'
 
-// API 기본 설정
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.DEV ? 'http://localhost:8002/api/v1' : 'https://line-up-backend-production.up.railway.app/api/v1')
+// API 기본 설정 - Railway 환경에서 강제 HTTPS
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL
+  const defaultUrl = import.meta.env.DEV 
+    ? 'http://localhost:8002/api/v1' 
+    : 'https://line-up-backend-production.up.railway.app/api/v1'
+  
+  const baseUrl = envUrl || defaultUrl
+  
+  // 프로덕션에서는 항상 HTTPS 강제
+  if (!import.meta.env.DEV && baseUrl.startsWith('http://')) {
+    return baseUrl.replace('http://', 'https://')
+  }
+  
+  return baseUrl
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 // 디버깅용 로그
 console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL)
