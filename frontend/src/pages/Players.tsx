@@ -264,6 +264,7 @@ export default function Players() {
                     <SortableHeader field="name">이름</SortableHeader>
                     <SortableHeader field="role">역할</SortableHeader>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">선호포지션</th>
+                    <SortableHeader field="is_professional">선수출신</SortableHeader>
                     <SortableHeader field="is_active">상태</SortableHeader>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">작업</th>
                   </tr>
@@ -318,6 +319,15 @@ export default function Players() {
                         ) : (
                           <span className="text-sm text-gray-500">-</span>
                         )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                          player.is_professional 
+                            ? 'bg-orange-100 text-orange-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {player.is_professional ? '선수출신' : '비선수출신'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
