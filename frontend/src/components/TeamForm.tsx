@@ -75,7 +75,8 @@ export default function TeamForm({ team, isEditMode, onClose }: TeamFormProps) {
       onClose()
     } catch (error) {
       console.error('팀 저장 실패:', error)
-      alert('팀 저장에 실패했습니다.')
+      console.error('오류 상세:', error.response?.data)
+      alert(`팀 저장에 실패했습니다: ${error.response?.data?.detail || error.message}`)
     }
   }
 
