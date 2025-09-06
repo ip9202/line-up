@@ -23,34 +23,6 @@ export default function LineupEditorPage() {
   // 우리팀 찾기
   const ourTeam = teams?.find(team => team.is_our_team)
 
-  // 새 라인업 생성 함수
-  const handleCreateLineup = async () => {
-    if (!selectedGameId) {
-      console.error('selectedGameId가 없습니다:', selectedGameId)
-      return
-    }
-    
-    console.log('라인업 생성 시도:', { selectedGameId, gameId: searchParams.get('gameId') })
-    
-    try {
-      const newLineup = await createLineup({
-        game_id: selectedGameId,
-        name: `라인업 ${new Date().toLocaleDateString()}`,
-        is_default: false
-      })
-      
-      console.log('라인업 생성 성공:', newLineup)
-      
-      // 라인업 목록 새로고침
-      await refetchLineups()
-      
-      // 새로 생성된 라인업으로 이동
-      setSelectedLineupId(newLineup.id)
-    } catch (error) {
-      console.error('라인업 생성 실패:', error)
-      alert('라인업 생성에 실패했습니다: ' + (error as any)?.message)
-    }
-  }
 
 
   // URL 파라미터에서 gameId 처리
@@ -66,36 +38,40 @@ export default function LineupEditorPage() {
     }
     
     if (gameId) {
-      setSelectedGameId(parseInt(gameId))
+      const gameIdNum = parseInt(gameId)
+      setSelectedGameId(gameIdNum)
+      
       // gameId가 있으면 바로 라인업 편집 모드로 진입
       // 라인업이 없으면 자동으로 생성
-      const gameLineups = lineups?.filter(lineup => lineup.game_id === parseInt(gameId)) || []
+      const gameLineups = lineups?.filter(lineup => lineup.game_id === gameIdNum) || []
       console.log('gameLineups:', gameLineups)
+      
       if (gameLineups.length === 0) {
         // 라인업이 없으면 자동으로 생성
         console.log('라인업 생성 시도')
-        handleCreateLineup()
+        createLineup({
+          game_id: gameIdNum,
+          name: `라인업 ${new Date().toLocaleDateString()}`,
+          is_default: false
+        }).then(newLineup => {
+          console.log('라인업 생성 성공:', newLineup)
+          // 라인업 목록 새로고침
+          refetchLineups().then(() => {
+            // 새로 생성된 라인업으로 이동
+            setSelectedLineupId(newLineup.id)
+          })
+        }).catch(error => {
+          console.error('라인업 생성 실패:', error)
+          alert('라인업 생성에 실패했습니다: ' + (error as any)?.message)
+        })
       } else {
         // 라인업이 있으면 첫 번째 라인업 선택
         console.log('기존 라인업 선택:', gameLineups[0].id)
         setSelectedLineupId(gameLineups[0].id)
       }
     }
-  }, [searchParams, lineups, lineupsLoading, gamesLoading])
+  }, [searchParams, lineups, lineupsLoading, gamesLoading, refetchLineups])
 
-  // 라인업 생성 후 selectedLineupId 설정
-  useEffect(() => {
-    console.log('selectedGameId:', selectedGameId)
-    console.log('selectedLineupId:', selectedLineupId)
-    if (selectedGameId && lineups) {
-      const gameLineups = lineups.filter(lineup => lineup.game_id === selectedGameId)
-      console.log('라인업 생성 후 gameLineups:', gameLineups)
-      if (gameLineups.length > 0 && !selectedLineupId) {
-        console.log('라인업 생성 후 selectedLineupId 설정:', gameLineups[0].id)
-        setSelectedLineupId(gameLineups[0].id)
-      }
-    }
-  }, [selectedGameId, lineups, selectedLineupId])
 
   // 권한 체크 함수들
   const canManageLineups = () => {
