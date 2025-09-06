@@ -1,53 +1,38 @@
-import api from '../lib/api'
+import { BaseApiService } from './baseService'
 import { Team, TeamCreate, TeamUpdate } from '../types'
 import { API_ENDPOINTS } from '../constants'
 
-const API_BASE_URL = API_ENDPOINTS.TEAMS
+// 팀 서비스 클래스
+class TeamApiService extends BaseApiService<Team, TeamCreate, TeamUpdate> {
+  constructor() {
+    super(API_ENDPOINTS.TEAMS)
+  }
 
-export const teamService = {
-  // 팀 목록 조회
-  getTeams: async (params?: {
+  // 특정 조건으로 팀 조회 (확장 메서드)
+  async getTeams(params?: {
     skip?: number
     limit?: number
     active?: boolean
     league?: string
-  }): Promise<Team[]> => {
-    const searchParams = new URLSearchParams()
-    if (params?.skip) searchParams.append('skip', params.skip.toString())
-    if (params?.limit) searchParams.append('limit', params.limit.toString())
-    if (params?.active !== undefined) searchParams.append('active', params.active.toString())
-    if (params?.league) searchParams.append('league', params.league)
-
-    const url = searchParams.toString() ? `${API_BASE_URL}?${searchParams}` : API_BASE_URL
-    const response = await api.get(url)
-    return response.data
-  },
-
-  // 팀 상세 조회
-  getTeam: async (id: number): Promise<Team> => {
-    const response = await api.get(`${API_BASE_URL}/${id}`)
-    return response.data
-  },
-
-  // 팀 생성
-  createTeam: async (team: TeamCreate): Promise<Team> => {
-    console.log('팀 생성 요청 데이터:', team)
-    const response = await api.post(API_BASE_URL, team, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    return response.data
-  },
-
-  // 팀 수정
-  updateTeam: async (id: number, team: TeamUpdate): Promise<Team> => {
-    const response = await api.put(`${API_BASE_URL}/${id}`, team)
-    return response.data
-  },
-
-  // 팀 삭제
-  deleteTeam: async (id: number): Promise<void> => {
-    await api.delete(`${API_BASE_URL}/${id}`)
+  }): Promise<Team[]> {
+    return this.getAll(params)
   }
 }
+
+// 서비스 인스턴스 생성
+const teamService = new TeamApiService()
+
+// 기존 함수형 인터페이스 유지 (하위 호환성)
+export const getTeams = (params?: {
+  skip?: number
+  limit?: number
+  active?: boolean
+  league?: string
+}) => teamService.getTeams(params)
+
+export const getTeam = (id: number) => teamService.getById(id)
+export const createTeam = (team: TeamCreate) => teamService.create(team)
+export const updateTeam = (id: number, team: TeamUpdate) => teamService.update(id, team)
+export const deleteTeam = (id: number) => teamService.delete(id)
+
+export default teamService
