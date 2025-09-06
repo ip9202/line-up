@@ -21,11 +21,8 @@ export default defineConfig({
     host: true,
     port: parseInt(process.env.PORT || '3000'),
     allowedHosts: ['healthcheck.railway.app', 'line-up-frontend-production.up.railway.app'],
-    // HTTPS 강제 설정
-    https: true,
-    // Mixed Content 방지
+    // Mixed Content 방지 헤더만 유지 (HTTPS는 Railway에서 처리)
     headers: {
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
       'Content-Security-Policy': "upgrade-insecure-requests"
     }
   },
