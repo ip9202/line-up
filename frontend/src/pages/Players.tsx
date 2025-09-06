@@ -28,6 +28,10 @@ export default function Players() {
   
   // 디버깅용 로그
   console.log('팀 데이터:', { teams, teamsLoading, teamsError })
+  console.log('선수 데이터:', { players })
+  if (players && players.length > 0) {
+    console.log('첫 번째 선수:', players[0])
+  }
   const deletePlayerMutation = useDeletePlayer()
 
   // 권한 체크 함수들
