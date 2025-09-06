@@ -97,29 +97,8 @@ async def get_lineup(lineup_id: int, db: Session = Depends(get_db)):
     if not lineup:
         raise HTTPException(status_code=404, detail="Lineup not found")
     
-    # 라인업 플레이어들에 선수 정보 추가
-    lineup_players_with_details = []
-    for lineup_player in lineup.lineup_players:
-        lineup_player_dict = {
-            "id": lineup_player.id,
-            "player_id": lineup_player.player_id,
-            "position": lineup_player.position,
-            "batting_order": lineup_player.batting_order,
-            "is_starter": lineup_player.is_starter,
-            "created_at": lineup_player.created_at,
-            "player": {
-                "id": lineup_player.player.id,
-                "name": lineup_player.player.name,
-                "number": lineup_player.player.number,
-                "phone": lineup_player.player.phone,
-                "email": lineup_player.player.email,
-                "role": lineup_player.player.role,
-                "age": lineup_player.player.age,
-                "is_professional": lineup_player.player.is_professional,
-                "is_active": lineup_player.player.is_active
-            } if lineup_player.player else None
-        }
-        lineup_players_with_details.append(lineup_player_dict)
+    # 라인업 플레이어들은 이미 올바른 관계로 로드되었으므로 그대로 사용
+    lineup_players_with_details = lineup.lineup_players
     
     # 경기 정보 조회
     game = db.query(Game).filter(Game.id == lineup.game_id).first()
@@ -310,38 +289,33 @@ async def add_player_to_lineup(
         raise HTTPException(status_code=404, detail="Player not found")
     
     # Check for player conflicts
-    if 1 <= player_data.batting_order <= 9:
-        # 같은 타순에 기존 선수들 확인
-        existing_players = db.query(LineupPlayer).filter(
+    # 같은 타순에 기존 선수가 있으면 모두 삭제 (교체)
+    existing_players = db.query(LineupPlayer).filter(
+        LineupPlayer.lineup_id == lineup_id,
+        LineupPlayer.batting_order == player_data.batting_order
+    ).all()
+    
+    for existing_player in existing_players:
+        db.delete(existing_player)
+    
+    # 변경사항을 먼저 커밋하여 unique constraint 충돌 방지
+    db.commit()
+    
+    # 포지션 중복 체크 (1~9번 타자들만, 투수 제외)
+    if 1 <= player_data.batting_order <= 9 and player_data.position and player_data.position != 'P':
+        # 같은 포지션에 다른 선수가 있는지 확인
+        existing_player = db.query(LineupPlayer).filter(
             LineupPlayer.lineup_id == lineup_id,
-            LineupPlayer.batting_order == player_data.batting_order
-        ).all()
+            LineupPlayer.position == player_data.position,
+            LineupPlayer.batting_order >= 1,
+            LineupPlayer.batting_order <= 9
+        ).first()
         
-        if existing_players:
-            # 투수가 아닌 경우 (position이 NULL이거나 'P'가 아닌 경우): 기존 타자들을 모두 제거하고 새 타자 추가 (교체)
-            if player_data.position != 'P':
-                for existing_player in existing_players:
-                    if existing_player.position != 'P':
-                        db.delete(existing_player)
-            else:
-                # 투수인 경우: 기존 선수들과 중복 체크 없이 추가 (투수는 타자와 중복 가능)
-                pass
-        
-        # 중복 체크: 1~9번 타자들만 포지션 중복 체크
-        if player_data.position and player_data.position != 'P':
-            # 같은 포지션에 다른 선수가 있는지 확인 (1~9번만)
-            existing_player = db.query(LineupPlayer).filter(
-                LineupPlayer.lineup_id == lineup_id,
-                LineupPlayer.position == player_data.position,
-                LineupPlayer.batting_order >= 1,
-                LineupPlayer.batting_order <= 9
-            ).first()
-            
-            if existing_player:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"해당 포지션({player_data.position})은 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다."
-                )
+        if existing_player:
+            raise HTTPException(
+                status_code=400,
+                detail=f"해당 포지션({player_data.position})은 이미 타순 {existing_player.batting_order}번에 배정되어 있습니다."
+            )
     
     # Create lineup player
     player_data_dict = player_data.dict()

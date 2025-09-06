@@ -55,11 +55,8 @@ export default function LineupEditorPage() {
           is_default: false
         }).then(newLineup => {
           console.log('라인업 생성 성공:', newLineup)
-          // 라인업 목록 새로고침
-          refetchLineups().then(() => {
-            // 새로 생성된 라인업으로 이동
-            setSelectedLineupId(newLineup.id)
-          })
+          // 새로 생성된 라인업으로 바로 이동
+          setSelectedLineupId(newLineup.id)
         }).catch(error => {
           console.error('라인업 생성 실패:', error)
           alert('라인업 생성에 실패했습니다: ' + (error as any)?.message)
@@ -70,7 +67,7 @@ export default function LineupEditorPage() {
         setSelectedLineupId(gameLineups[0].id)
       }
     }
-  }, [searchParams, lineups, lineupsLoading, gamesLoading, refetchLineups])
+  }, [searchParams, lineups, lineupsLoading, gamesLoading])
 
 
   // 권한 체크 함수들
@@ -223,7 +220,7 @@ export default function LineupEditorPage() {
             <div className="flex items-center gap-3">
               {selectedLineupId && (
                 <button
-                  onClick={() => window.open(`/lineup/sheet/${selectedLineupId}`, '_blank')}
+                  onClick={() => navigate(`/lineup/sheet/${selectedLineupId}`)}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                 >
                   <FileText className="h-4 w-4" />

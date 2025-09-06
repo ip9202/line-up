@@ -14,8 +14,8 @@ class LineupPlayerCreate(LineupPlayerBase):
 class PlayerInfo(BaseModel):
     id: int
     name: str
-    number: Optional[int] = None
-    phone: str
+    number: Optional[str] = None
+    phone: Optional[str] = None
     email: Optional[str] = None
     role: str
     age: Optional[int] = None
